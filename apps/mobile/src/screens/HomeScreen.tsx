@@ -40,7 +40,7 @@ const assets = {
   bannerMirror:
     'https://www.figma.com/api/mcp/asset/36bef8bd-03a5-48e5-8f3d-9278fbe45e8c',
   scheduleAvatar:
-    'https://www.figma.com/api/mcp/asset/cdfdae8b-3539-460d-bad2-18d128a94617',
+    'https://www.figma.com/api/mcp/asset/4f4ea8ac-cb2e-46c2-9005-ad36962c2e38',
   star: 'https://www.figma.com/api/mcp/asset/953abe0f-4667-487f-a247-c56603dd26cc',
   barberOne:
     'https://www.figma.com/api/mcp/asset/4f4ea8ac-cb2e-46c2-9005-ad36962c2e38',
@@ -189,7 +189,7 @@ export const HomeScreen: React.FC = () => {
 
         <View style={styles.greeting}>
           <Text style={styles.greetingTitle}>
-            Olá, <Text style={styles.greetingName}>Miguel!</Text>
+            Seja <Text style={styles.greetingName}>Bem-vindo!</Text>
           </Text>
           <Text style={styles.greetingSubtitle}>Sexta, 2 de Fevereiro</Text>
         </View>
@@ -229,7 +229,7 @@ export const HomeScreen: React.FC = () => {
           <View style={styles.bannerContent}>
             <Text style={styles.bannerTitle}>Agende</Text>
             <Text style={styles.bannerTitle}>nos melhores</Text>
-            <Text style={styles.bannerSubtitle}>com FSW Barber</Text>
+            <Text style={styles.bannerSubtitle}>com Flash Barber</Text>
           </View>
           <BannerArt />
         </View>
@@ -244,10 +244,13 @@ export const HomeScreen: React.FC = () => {
               <View style={styles.scheduleDetails}>
                 <Text style={styles.scheduleTitle}>Corte de Cabelo</Text>
                 <View style={styles.scheduleBarber}>
-                  <Image
-                    source={{ uri: assets.scheduleAvatar }}
-                    style={styles.scheduleAvatar}
-                  />
+                  <View style={styles.scheduleAvatarWrapper}>
+                    <Image
+                      source={{ uri: assets.scheduleAvatar }}
+                      style={styles.scheduleAvatar}
+                      resizeMode="cover"
+                    />
+                  </View>
                   <Text style={styles.scheduleBarberName}>Vintage Barber</Text>
                 </View>
               </View>
@@ -299,7 +302,7 @@ export const HomeScreen: React.FC = () => {
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             © 2026 Copyright{' '}
-            <Text style={styles.footerTextBold}>FSW Barber</Text>
+            <Text style={styles.footerTextBold}>Flash Barber</Text>
           </Text>
         </View>
       </ScrollView>
@@ -581,10 +584,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  scheduleAvatar: {
+  scheduleAvatarWrapper: {
     width: 24,
     height: 24,
     borderRadius: 12,
+    overflow: 'hidden',
+    backgroundColor: '#26272B',
+  },
+  scheduleAvatar: {
+    width: 24,
+    height: 24,
   },
   scheduleBarberName: {
     color: '#FFFFFF',
