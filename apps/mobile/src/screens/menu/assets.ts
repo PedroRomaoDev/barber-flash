@@ -1,4 +1,6 @@
 export const menuAssets = {
+  googleIcon:
+    'https://www.figma.com/api/mcp/asset/444d733f-7d96-4f18-8d0e-b5755ff615d8',
   closeStrokeOne:
     'https://www.figma.com/api/mcp/asset/1a1f6184-a9d0-40b0-8d05-8bc4472495ae',
   closeStrokeTwo:
