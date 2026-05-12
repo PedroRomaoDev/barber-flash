@@ -1,6 +1,6 @@
 export const assets = {
   scissor:
-    'https://www.figma.com/api/mcp/asset/48d5a070-6656-4dbd-a396-74b116b784a1',
+    'https://www.figma.com/api/mcp/asset/7cc7268b-6903-4994-9f21-4b412846d225',
   logoText:
     'https://www.figma.com/api/mcp/asset/2c13e0a7-81c7-494b-a2fa-66ab96cb3c40',
   searchLens:

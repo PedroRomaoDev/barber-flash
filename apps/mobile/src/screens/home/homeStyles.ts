@@ -5,6 +5,14 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#141518',
   },
+  menuOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    zIndex: 10,
+  },
   scrollContent: {
     paddingBottom: 24,
   },
@@ -27,6 +35,7 @@ export const styles = StyleSheet.create({
     width: 22,
     height: 22,
     marginRight: 6,
+    tintColor: '#8162FF',
   },
   logoText: {
     width: 95,
