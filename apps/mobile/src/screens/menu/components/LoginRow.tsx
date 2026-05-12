@@ -1,10 +1,14 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, Pressable } from 'react-native';
 import { styles } from '../menuStyles';
 import { menuAssets } from '../assets';
 
-export const LoginRow: React.FC = () => (
-  <View style={styles.loginRow}>
+type LoginRowProps = {
+  onPress: () => void;
+};
+
+export const LoginRow: React.FC<LoginRowProps> = ({ onPress }) => (
+  <Pressable style={styles.loginRow} onPress={onPress}>
     <Text style={styles.loginText}>Olá. Faça seu login!</Text>
     <View style={styles.iconButtonSquare}>
       <View style={styles.loginIconWrap}>
@@ -22,5 +26,5 @@ export const LoginRow: React.FC = () => (
         />
       </View>
     </View>
-  </View>
+  </Pressable>
 );
