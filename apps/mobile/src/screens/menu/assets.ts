@@ -1,0 +1,30 @@
+export const menuAssets = {
+  closeStrokeOne:
+    'https://www.figma.com/api/mcp/asset/1a1f6184-a9d0-40b0-8d05-8bc4472495ae',
+  closeStrokeTwo:
+    'https://www.figma.com/api/mcp/asset/189c3850-6549-4f20-b733-4fa377c38667',
+  loginArrowOuter:
+    'https://www.figma.com/api/mcp/asset/d0257a67-4a21-4345-93af-4d0de5be1c60',
+  loginArrowInner:
+    'https://www.figma.com/api/mcp/asset/673b3651-07a5-4d7b-bf52-973ce5baad3b',
+  loginArrowStem:
+    'https://www.figma.com/api/mcp/asset/e11efd85-20dd-4058-9ab9-626de16aee6a',
+  divider:
+    'https://www.figma.com/api/mcp/asset/a32ad854-293a-4341-8a10-90d80b1db9e7',
+  iconHome:
+    'https://www.figma.com/api/mcp/asset/8a8c431e-a49d-4435-8272-3f01bbb994cc',
+  iconCalendar:
+    'https://www.figma.com/api/mcp/asset/3763641a-4d04-460f-81b2-e8bc42709fd4',
+  iconScissors:
+    'https://www.figma.com/api/mcp/asset/bdf93107-ac63-4c38-a49a-1ccf034ac1b4',
+  iconMustache:
+    'https://www.figma.com/api/mcp/asset/42fde2bb-9251-4480-85b7-2d5198dac5ea',
+  iconRazor:
+    'https://www.figma.com/api/mcp/asset/9c7418ec-c5ee-4c27-9938-c64ac43127e3',
+  iconEyebrow:
+    'https://www.figma.com/api/mcp/asset/98ba3c69-2cd8-482d-a070-a1b08d0c2558',
+  iconTowel:
+    'https://www.figma.com/api/mcp/asset/dd112c9b-3ccd-4a57-86c5-e85cddff3fca',
+  iconShampoo:
+    'https://www.figma.com/api/mcp/asset/8fe5f07c-f8c3-4b9d-a31d-f97ac9a69f05',
+};
