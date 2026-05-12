@@ -21,13 +21,19 @@
   <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
   [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
 
-## Barber Flash API
+## Barber Flash Monorepo
 
-Backend API for the BARBER FLASH mobile marketplace. Built with NestJS, TypeORM, and PostgreSQL, using Google OAuth2 plus JWT for authentication.
+Monorepo para a BARBER FLASH com Turbo, preparado para manter a API e o futuro frontend no mesmo repositório.
+
+### Estrutura
+
+- `apps/api`: backend NestJS, TypeORM e PostgreSQL
+- `apps/web`: frontend a ser adicionado depois
+- `packages/*`: código compartilhado entre apps, quando necessário
 
 ## Environment
 
-Create a local `.env` from `.env.example` and fill in values for database and Google OAuth2.
+Crie um `.env` na raiz a partir de `.env.example` e preencha as variáveis de banco e Google OAuth2.
 
 ## Auth endpoints
 
@@ -43,33 +49,31 @@ POST /auth/google
 ## Project setup
 
 ```bash
-$ npm install
+pnpm install
 ```
 
-## Compile and run the project
+## Run the monorepo
 
 ```bash
 # development
-$ npm run start
+pnpm dev
 
-# watch mode
-$ npm run start:dev
+# build
+pnpm build
 
-# production mode
-$ npm run start:prod
+# lint
+pnpm lint
+
+# tests
+pnpm test
 ```
 
-## Run tests
+## Run the API directly
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+pnpm --filter @barber/api dev
+pnpm --filter @barber/api build
+pnpm --filter @barber/api test
 ```
 
 ## Deployment
