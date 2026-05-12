@@ -1,0 +1,41 @@
+export const assets = {
+  scissor:
+    'https://www.figma.com/api/mcp/asset/48d5a070-6656-4dbd-a396-74b116b784a1',
+  logoText:
+    'https://www.figma.com/api/mcp/asset/2c13e0a7-81c7-494b-a2fa-66ab96cb3c40',
+  searchLens:
+    'https://www.figma.com/api/mcp/asset/3f6a56ab-8e24-4310-a978-a9a2c062f9bc',
+  searchHandle:
+    'https://www.figma.com/api/mcp/asset/f626f7a8-e380-4bf3-919a-35ce9c47d9af',
+  categoryScissors:
+    'https://www.figma.com/api/mcp/asset/7cc7268b-6903-4994-9f21-4b412846d225',
+  categoryMustache:
+    'https://www.figma.com/api/mcp/asset/99e51f5c-fbe3-4c58-8577-e635b0e4b45e',
+  categoryRazor:
+    'https://www.figma.com/api/mcp/asset/0dbcadb2-3d73-4bd3-8811-8a42b334a09e',
+  bannerBackground:
+    'https://www.figma.com/api/mcp/asset/2495f440-114f-44a3-8e97-b128cc50db23',
+  bannerWindow:
+    'https://www.figma.com/api/mcp/asset/a638e653-27a0-4643-9144-f935bf7790f7',
+  bannerStars:
+    'https://www.figma.com/api/mcp/asset/60a4c9fc-89d1-4338-bfbe-0dd8fa22ddaa',
+  bannerCharacterTwo:
+    'https://www.figma.com/api/mcp/asset/b9e66f08-52de-499e-a437-4e6dd26024ec',
+  bannerCharacterOne:
+    'https://www.figma.com/api/mcp/asset/c501a2d0-9268-4f69-b59b-c20f31781bc3',
+  bannerTable:
+    'https://www.figma.com/api/mcp/asset/bb5b607c-70f4-496e-aee0-cc8fdedbfafb',
+  bannerMirror:
+    'https://www.figma.com/api/mcp/asset/36bef8bd-03a5-48e5-8f3d-9278fbe45e8c',
+  scheduleAvatar:
+    'https://www.figma.com/api/mcp/asset/4f4ea8ac-cb2e-46c2-9005-ad36962c2e38',
+  star: 'https://www.figma.com/api/mcp/asset/953abe0f-4667-487f-a247-c56603dd26cc',
+  barberOne:
+    'https://www.figma.com/api/mcp/asset/4f4ea8ac-cb2e-46c2-9005-ad36962c2e38',
+  barberTwo:
+    'https://www.figma.com/api/mcp/asset/a9a83df7-7e60-4f73-a869-07eed06b05a5',
+  barberThree:
+    'https://www.figma.com/api/mcp/asset/b4ab0cfe-10a5-4f66-abf1-d1e6893d4102',
+  barberFour:
+    'https://www.figma.com/api/mcp/asset/79623260-c21c-46fc-ab5b-84fbd170ca62',
+};

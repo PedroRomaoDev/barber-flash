@@ -1,0 +1,9 @@
+export { HomeHeader } from './HomeHeader';
+export { Greeting } from './Greeting';
+export { SearchBar } from './SearchBar';
+export { CategoryRow } from './CategoryRow';
+export { Banner } from './Banner';
+export { SectionTitle } from './SectionTitle';
+export { ScheduleCard } from './ScheduleCard';
+export { BarberRow } from './BarberRow';
+export { Footer } from './Footer';
