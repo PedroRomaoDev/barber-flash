@@ -1,5 +1,5 @@
-import React from 'react';
-import { ScrollView, SafeAreaView, View } from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, SafeAreaView, View, StyleSheet } from 'react-native';
 import { assets } from './home/assets';
 import { categories, popularItems, recommendedItems } from './home/data';
 import { styles } from './home/homeStyles';
@@ -14,25 +14,28 @@ import {
   SearchBar,
   SectionTitle,
 } from './home/components';
+import { MenuScreen } from './MenuScreen';
 
 export const HomeScreen: React.FC = () => {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <HomeHeader />
+        <HomeHeader onMenuPress={() => setMenuOpen(true)} />
         <Greeting
-          title="Seja"
-          highlight="Bem-vindo!"
+          title="Olá,"
+          highlight="Miguel!"
           subtitle="Sexta, 2 de Fevereiro"
         />
         <SearchBar />
         <CategoryRow categories={categories} />
         <Banner
           titleLines={['Agende', 'nos melhores']}
-          subtitle="com Flash Barber"
+          subtitle="com FSW Barber"
         />
 
         <View style={styles.section}>
@@ -58,8 +61,13 @@ export const HomeScreen: React.FC = () => {
           <BarberRow items={popularItems} prefix="pop" />
         </View>
 
-        <Footer brand="Flash Barber" />
+        <Footer brand="FSW Barber" />
       </ScrollView>
+      {menuOpen && (
+        <View style={[StyleSheet.absoluteFillObject, { zIndex: 10 }]}>
+          <MenuScreen onClose={() => setMenuOpen(false)} />
+        </View>
+      )}
     </SafeAreaView>
   );
 };
