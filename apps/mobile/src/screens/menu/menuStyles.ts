@@ -186,10 +186,19 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
+  dialogButtonDisabled: {
+    opacity: 0.65,
+  },
   dialogButtonText: {
     fontSize: 14,
     color: '#FFFFFF',
     fontFamily: 'Nunito_700Bold',
+  },
+  dialogErrorText: {
+    fontSize: 13,
+    color: '#FF7D7D',
+    fontFamily: 'Nunito_400Regular',
+    textAlign: 'center',
   },
   dialogGoogleIcon: {
     width: 16,

@@ -5,11 +5,12 @@ import { menuAssets } from '../assets';
 
 type LoginRowProps = {
   onPress: () => void;
+  label: string;
 };
 
-export const LoginRow: React.FC<LoginRowProps> = ({ onPress }) => (
+export const LoginRow: React.FC<LoginRowProps> = ({ onPress, label }) => (
   <Pressable style={styles.loginRow} onPress={onPress}>
-    <Text style={styles.loginText}>Olá. Faça seu login!</Text>
+    <Text style={styles.loginText}>{label}</Text>
     <View style={styles.iconButtonSquare}>
       <View style={styles.loginIconWrap}>
         <Image
