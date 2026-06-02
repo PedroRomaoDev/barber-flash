@@ -5,12 +5,14 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
+import { BarbershopsModule } from './barbershops/barbershops.module';
 import { BarberProfile } from './barbers/barber-profile.entity';
 import { Barbershop } from './barbershops/barbershop.entity';
 import { Booking } from './bookings/booking.entity';
 import { Service } from './services/service.entity';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
+import { BookingsModule } from './bookings/bookings.module';
 
 @Module({
   imports: [
@@ -41,6 +43,8 @@ import { UsersModule } from './users/users.module';
     UsersModule,
     AuthModule,
     AdminModule,
+    BarbershopsModule,
+    BookingsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -3,21 +3,29 @@ import { assets } from './assets';
 export type CategoryItem = {
   id: string;
   label: string;
-  icon?: string;
+  icon?: string | number | any;
 };
 
 export type BarberItem = {
   id: string;
   name: string;
   address: string;
-  image: string;
+  imageUrl: string | number | any;
+  rating?: number;
+  reviewCount?: number;
+};
+
+export const mockSchedule = {
+  status: "Confirmado",
+  service: "Corte de Cabelo",
+  barberName: "Vintage Barber",
+  avatar: null, // Will use placeholder
+  month: "Fevereiro",
+  day: "06",
+  time: "09:45"
 };
 
 export const categories: CategoryItem[] = [
-  { id: 'cabelo', label: 'Cabelo', icon: assets.categoryScissors },
-  { id: 'barba', label: 'Barba', icon: assets.categoryMustache },
-  { id: 'acabamento', label: 'Acabamento', icon: assets.categoryRazor },
-  { id: 'sombrancelha', label: 'Sombrancelha' },
 ];
 
 export const recommendedItems: BarberItem[] = [
@@ -25,25 +33,25 @@ export const recommendedItems: BarberItem[] = [
     id: '1',
     name: 'Vintage Barber',
     address: 'Avenida São Sebastião, 357, São Paulo',
-    image: assets.barberOne,
+    imageUrl: assets.barberOne,
   },
   {
     id: '2',
     name: 'Clássica Cortez',
     address: 'Rua Castro Alves, 331, Sao Paulo',
-    image: assets.barberTwo,
+    imageUrl: assets.barberTwo,
   },
   {
     id: '3',
     name: 'Los Barberos',
     address: 'Rua Sete de Setembro, 428, São Paulo',
-    image: assets.barberThree,
+    imageUrl: assets.barberThree,
   },
   {
     id: '4',
     name: 'Homem Elegante',
     address: 'Rua Projetada, 529, São Paulo',
-    image: assets.barberFour,
+    imageUrl: assets.barberFour,
   },
 ];
 

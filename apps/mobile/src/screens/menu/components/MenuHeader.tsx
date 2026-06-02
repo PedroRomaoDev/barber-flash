@@ -3,6 +3,8 @@ import { View, Text, Image, TouchableOpacity } from 'react-native';
 import { styles } from '../menuStyles';
 import { menuAssets } from '../assets';
 
+import { Feather } from '@expo/vector-icons';
+
 type MenuHeaderProps = {
   onClose: () => void;
 };
@@ -15,15 +17,15 @@ export const MenuHeader: React.FC<MenuHeaderProps> = ({ onClose }) => (
       activeOpacity={0.7}
       onPress={onClose}
     >
-      <View style={styles.closeIcon}>
-        <Image
-          source={{ uri: menuAssets.closeStrokeOne }}
-          style={styles.closeLineOne}
-        />
-        <Image
-          source={{ uri: menuAssets.closeStrokeTwo }}
-          style={styles.closeLineTwo}
-        />
+      <View style={[styles.closeIcon, { justifyContent: 'center', alignItems: 'center' }]}>
+        {menuAssets.closeStrokeOne ? (
+          <>
+            <Image source={menuAssets.closeStrokeOne as any} style={styles.closeLineOne} />
+            <Image source={menuAssets.closeStrokeTwo as any} style={styles.closeLineTwo} />
+          </>
+        ) : (
+          <Feather name="x" size={24} color="#FFF" />
+        )}
       </View>
     </TouchableOpacity>
   </View>

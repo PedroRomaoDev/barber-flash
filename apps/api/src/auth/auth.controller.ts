@@ -5,6 +5,7 @@ import { ConfigService } from '@nestjs/config';
 import { AuthService } from './auth.service';
 import { GoogleUserPayload } from '../users/users.service';
 import { GoogleLoginDto } from './dto/google-login.dto';
+import { LocalLoginDto, RegisterDto } from './dto/auth.dto';
 import { Response } from 'express';
 
 @Controller('auth')
@@ -14,6 +15,22 @@ export class AuthController {
         private readonly authService: AuthService,
         private readonly configService: ConfigService,
     ) { }
+
+    @Post('register')
+    @ApiOperation({ summary: 'Registrar novo usuário com e-mail' })
+    @ApiBody({ type: RegisterDto })
+    @ApiResponse({ status: 201, description: 'Usuário registrado com sucesso.' })
+    register(@Body() body: RegisterDto) {
+        return this.authService.registerWithEmail(body);
+    }
+
+    @Post('login')
+    @ApiOperation({ summary: 'Login com e-mail e senha' })
+    @ApiBody({ type: LocalLoginDto })
+    @ApiResponse({ status: 201, description: 'JWT emitido com sucesso.' })
+    login(@Body() body: LocalLoginDto) {
+        return this.authService.loginWithEmail(body);
+    }
 
     @Post('google')
     @UseGuards(AuthGuard('google-token'))

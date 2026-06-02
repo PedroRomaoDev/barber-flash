@@ -33,13 +33,21 @@ export const styles = StyleSheet.create({
   },
   logoScissor: {
     width: 22,
+    position: 'absolute',
+    left: 0,
+    top: 0,
     height: 22,
     marginRight: 6,
     tintColor: '#8162FF',
   },
   logoText: {
-    width: 95,
-    height: 18,
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    width: 22,
+    height: 22,
   },
   menuButton: {
     width: 40,
@@ -48,6 +56,7 @@ export const styles = StyleSheet.create({
     backgroundColor: '#141518',
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 30,
     gap: 4,
   },
   menuLine: {
@@ -55,6 +64,18 @@ export const styles = StyleSheet.create({
     height: 2,
     borderRadius: 2,
     backgroundColor: '#FFFFFF',
+  },
+  marca: {
+    left: 0,
+    right: 0,
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontFamily: 'Arial_800Regular',
+    fontWeight: 800,
+    opacity: 0.6,
+    lineHeight: 24,
+    textAlign: 'center',
+    marginTop: 20
   },
   divider: {
     height: 1,
@@ -330,6 +351,7 @@ export const styles = StyleSheet.create({
     paddingRight: 20,
   },
   barberCard: {
+    margin: 10,
     width: 167,
     borderRadius: 16,
     borderWidth: 1,

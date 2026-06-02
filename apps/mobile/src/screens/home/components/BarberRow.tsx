@@ -20,7 +20,7 @@ export const BarberRow: React.FC<BarberRowProps> = ({ items, prefix }) => (
         key={`${prefix}-${item.id}-${index}`}
         name={item.name}
         address={item.address}
-        image={item.image}
+        image={item.imageUrl}
       />
     ))}
   </ScrollView>

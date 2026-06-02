@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, ConflictException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './user.entity';
 import { Role } from '../auth/roles.enum';
+import * as bcrypt from 'bcrypt';
+import { RegisterDto } from '../auth/dto/auth.dto';
 
 export interface GoogleUserPayload {
     googleId: string;
@@ -24,6 +26,25 @@ export class UsersService {
 
     findByEmail(email: string): Promise<User | null> {
         return this.usersRepository.findOne({ where: { email } });
+    }
+
+    async createLocalUser(dto: RegisterDto): Promise<User> {
+        const existing = await this.findByEmail(dto.email);
+        if (existing) {
+            throw new ConflictException('Email already in use');
+        }
+
+        const hashedPassword = await bcrypt.hash(dto.password, 10);
+        const usersCount = await this.usersRepository.count();
+
+        const user = this.usersRepository.create({
+            email: dto.email,
+            name: dto.name,
+            password: hashedPassword,
+            role: usersCount === 0 ? Role.ADMIN : Role.CLIENT,
+        });
+
+        return this.usersRepository.save(user);
     }
 
     async findOrCreateFromGoogle(payload: GoogleUserPayload): Promise<User> {

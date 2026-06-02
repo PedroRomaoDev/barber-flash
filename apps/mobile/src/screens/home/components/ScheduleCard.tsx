@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, Image } from 'react-native';
 import { styles } from '../homeStyles';
 
+import { Feather } from '@expo/vector-icons';
+
 type ScheduleCardProps = {
   status: string;
   service: string;
   barberName: string;
-  avatar: string;
+  avatar: any;
   month: string;
   day: string;
   time: string;
@@ -29,12 +31,12 @@ export const ScheduleCard: React.FC<ScheduleCardProps> = ({
       <View style={styles.scheduleDetails}>
         <Text style={styles.scheduleTitle}>{service}</Text>
         <View style={styles.scheduleBarber}>
-          <View style={styles.scheduleAvatarWrapper}>
-            <Image
-              source={{ uri: avatar }}
-              style={styles.scheduleAvatar}
-              resizeMode="cover"
-            />
+          <View style={[styles.scheduleAvatarWrapper, { justifyContent: 'center', alignItems: 'center', backgroundColor: '#26272B' }]}>
+            {avatar ? (
+              <Image source={avatar} style={styles.scheduleAvatar} resizeMode="cover" />
+            ) : (
+              <Feather name="user" size={16} color="#FFF" />
+            )}
           </View>
           <Text style={styles.scheduleBarberName}>{barberName}</Text>
         </View>

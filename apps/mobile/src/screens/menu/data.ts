@@ -3,13 +3,11 @@ import { menuAssets } from './assets';
 export type MenuItem = {
   id: string;
   label: string;
-  icon: string;
+  icon: string | number | any;
   active?: boolean;
 };
 
 export const primaryItems: MenuItem[] = [
-  { id: 'home', label: 'Ínicio', icon: menuAssets.iconHome, active: true },
-  { id: 'bookings', label: 'Agendamentos', icon: menuAssets.iconCalendar },
 ];
 
 export const serviceItems: MenuItem[] = [

@@ -1,32 +1,35 @@
 import React from 'react';
-import { View, Image, TouchableOpacity } from 'react-native';
+import { View, Image, TouchableOpacity, Text } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { styles } from '../homeStyles';
 import { assets } from '../assets';
 
 type HomeHeaderProps = {
   onMenuPress: () => void;
+  onBellPress?: () => void;
+  showBell?: boolean;
 };
 
-export const HomeHeader: React.FC<HomeHeaderProps> = ({ onMenuPress }) => (
+export const HomeHeader: React.FC<HomeHeaderProps> = ({ onMenuPress, onBellPress, showBell }) => (
   <View style={styles.header}>
     <View style={styles.headerRow}>
-      <View style={styles.logo}>
-        <Image source={{ uri: assets.scissor }} style={styles.logoScissor} />
-        <Image
-          source={{ uri: assets.logoText }}
-          style={styles.logoText}
-          resizeMode="contain"
-        />
+      <Text style={styles.marca} >BARBER FLASH</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
+        {showBell && (
+          <TouchableOpacity onPress={onBellPress} style={{ marginTop: 24 }}>
+            <Feather name="bell" size={24} color="#FFF" />
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity
+          style={styles.menuButton}
+          activeOpacity={0.7}
+          onPress={onMenuPress}
+        >
+          <View style={styles.menuLine} />
+          <View style={styles.menuLine} />
+          <View style={styles.menuLine} />
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity
-        style={styles.menuButton}
-        activeOpacity={0.7}
-        onPress={onMenuPress}
-      >
-        <View style={styles.menuLine} />
-        <View style={styles.menuLine} />
-        <View style={styles.menuLine} />
-      </TouchableOpacity>
     </View>
     <View style={styles.divider} />
   </View>

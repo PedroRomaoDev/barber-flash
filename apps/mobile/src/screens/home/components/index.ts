@@ -1,4 +1,5 @@
 export { HomeHeader } from './HomeHeader';
+export { BarberCard } from './BarberCard';
 export { Greeting } from './Greeting';
 export { SearchBar } from './SearchBar';
 export { CategoryRow } from './CategoryRow';
