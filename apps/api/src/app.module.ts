@@ -13,6 +13,7 @@ import { Service } from './services/service.entity';
 import { User } from './users/user.entity';
 import { UsersModule } from './users/users.module';
 import { BookingsModule } from './bookings/bookings.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -45,6 +46,7 @@ import { BookingsModule } from './bookings/bookings.module';
     AdminModule,
     BarbershopsModule,
     BookingsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

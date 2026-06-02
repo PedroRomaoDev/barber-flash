@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { useStripe } from '@stripe/stripe-react-native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
 
@@ -53,11 +54,10 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
     fetchDetails();
   }, [barbershopId]);
 
-  const [showPaymentModal, setShowPaymentModal] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'pix' | 'credit'>('credit');
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
+  const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
-  const handleOpenPayment = () => {
+  const handleOpenPayment = async () => {
     if (!user || !token) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Faça login para continuar com o agendamento.' });
       return;
@@ -70,15 +70,12 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Selecione um horário.' });
       return;
     }
-    setShowPaymentModal(true);
+    await processPaymentAndBooking();
   };
 
   const processPaymentAndBooking = async () => {
     setIsProcessingPayment(true);
-
-    // Simulate payment gateway delay (e.g. Stripe / MercadoPago)
-    await new Promise(resolve => setTimeout(resolve, 2000));
-
+    
     try {
       let host = 'localhost';
       if (Constants.expoConfig?.hostUri) {
@@ -87,6 +84,54 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         host = '10.0.2.2';
       }
 
+      // 1. Criar Payment Intent no Backend
+      const intentResponse = await fetch(`http://${host}:3000/payments/create-intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          amount: Number(selectedService?.price) || 0
+        })
+      });
+
+      if (!intentResponse.ok) {
+        const errorText = await intentResponse.text();
+        console.error('API Error Response:', errorText);
+        throw new Error(`Falha na API: ${errorText}`);
+      }
+
+      const { clientSecret } = await intentResponse.json();
+
+      // 2. Inicializar o Payment Sheet nativo
+      const { error: initError } = await initPaymentSheet({
+        merchantDisplayName: 'Barber Flash',
+        paymentIntentClientSecret: clientSecret,
+        allowsDelayedPaymentMethods: true,
+        defaultBillingDetails: {
+          name: user.name,
+        }
+      });
+
+      if (initError) {
+        console.error(initError);
+        throw new Error('Erro ao abrir o painel de pagamento.');
+      }
+
+      // 3. Exibir o Payment Sheet e aguardar o cliente pagar
+      const { error: paymentError } = await presentPaymentSheet();
+
+      if (paymentError) {
+        if (paymentError.code === 'Canceled') {
+          // Usuário fechou o modal
+          setIsProcessingPayment(false);
+          return;
+        }
+        throw new Error(`Pagamento recusado: ${paymentError.message}`);
+      }
+
+      // 4. Pagamento Aprovado! Agora cria o agendamento no banco:
       const [hours, minutes] = selectedTime!.split(':');
       const scheduledAt = new Date(selectedDate);
       scheduledAt.setHours(parseInt(hours), parseInt(minutes), 0, 0);
@@ -107,21 +152,19 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
       });
 
       if (response.ok) {
-        setShowPaymentModal(false);
-        setModal({ visible: true, type: 'success', title: 'Sucesso!', message: `Pagamento (${paymentMethod === 'pix' ? 'PIX' : 'Cartão'}) aprovado e reserva confirmada!` });
+        setModal({ visible: true, type: 'success', title: 'Sucesso!', message: `Pagamento aprovado na Stripe e reserva confirmada!` });
       } else {
         const errData = await response.json();
         if (errData.message && errData.message.includes('disponível')) {
           throw new Error('CONFLITO_HORARIO');
         }
-        throw new Error('Falha na API');
+        throw new Error('Falha na API ao confirmar reserva');
       }
     } catch (e: any) {
-      setShowPaymentModal(false);
       if (e.message === 'CONFLITO_HORARIO') {
         setModal({ visible: true, type: 'error', title: 'Ops!', message: 'Este horário não está mais disponível para este barbeiro. Escolha outro horário.' });
       } else {
-        setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao processar o agendamento.' });
+        setModal({ visible: true, type: 'error', title: 'Erro', message: e.message || 'Ocorreu um erro ao processar o agendamento.' });
       }
     } finally {
       setIsProcessingPayment(false);
@@ -234,45 +277,6 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.confirmButtonText}>Pagar e Reservar</Text>
         </Pressable>
       </View>
-
-      {/* Mock Payment Modal */}
-      {showPaymentModal && (
-        <View style={StyleSheet.absoluteFillObject}>
-          <View style={styles.paymentOverlay}>
-            <Pressable style={StyleSheet.absoluteFillObject} onPress={() => !isProcessingPayment && setShowPaymentModal(false)} />
-            <View style={styles.paymentSheet}>
-              <Text style={styles.paymentTitle}>Pagamento (Mock)</Text>
-              <Text style={styles.paymentSubtitle}>Escolha a forma de pagamento simulada</Text>
-
-              <View style={styles.paymentMethods}>
-                <Pressable
-                  style={[styles.paymentMethodCard, paymentMethod === 'credit' && styles.paymentMethodCardActive]}
-                  onPress={() => !isProcessingPayment && setPaymentMethod('credit')}
-                >
-                  <Feather name="credit-card" size={24} color={paymentMethod === 'credit' ? '#FFF' : '#838896'} />
-                  <Text style={[styles.paymentMethodText, paymentMethod === 'credit' && styles.paymentMethodTextActive]}>Cartão</Text>
-                </Pressable>
-
-                <Pressable
-                  style={[styles.paymentMethodCard, paymentMethod === 'pix' && styles.paymentMethodCardActive]}
-                  onPress={() => !isProcessingPayment && setPaymentMethod('pix')}
-                >
-                  <Feather name="grid" size={24} color={paymentMethod === 'pix' ? '#FFF' : '#838896'} />
-                  <Text style={[styles.paymentMethodText, paymentMethod === 'pix' && styles.paymentMethodTextActive]}>PIX</Text>
-                </Pressable>
-              </View>
-
-              <Pressable style={styles.payActionBtn} onPress={processPaymentAndBooking} disabled={isProcessingPayment}>
-                {isProcessingPayment ? (
-                  <ActivityIndicator color="#FFF" />
-                ) : (
-                  <Text style={styles.payActionBtnText}>Confirmar Pagamento</Text>
-                )}
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      )}
 
     </SafeAreaView>
   );

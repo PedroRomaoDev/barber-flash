@@ -29,6 +29,15 @@
       "googleIosClientId": "",
       "googleAndroidClientId": "",
       "googleWebClientId": "483232823545-h8tv8qefm1bv8np4qlqmemkjmfnjqkj9.apps.googleusercontent.com"
-    }
+    },
+    "plugins": [
+      [
+        "@stripe/stripe-react-native",
+        {
+          "merchantIdentifier": "merchant.com.barberflash",
+          "enableGooglePay": false
+        }
+      ]
+    ]
   }
 }
