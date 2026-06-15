@@ -9,8 +9,8 @@ import { Platform } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 import { LoginDialog } from './menu/components/LoginDialog';
-import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BarbershopDetails'>;
 
@@ -37,6 +37,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
+  const toast = useToast();
 
   const handleBook = (serviceId: string) => {
     if (!user) {
@@ -46,31 +47,26 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
     }
   };
 
-  const handleLogin = async (email: string, pass: string) => {
+  const handleGoogleLogin = async () => {
     setAuthError(null);
     setIsLoggingIn(true);
     try {
-      const res = await loginWithEmail(email, pass);
-      setUser(res.user);
-      setToken(res.accessToken);
+      await new Promise<void>((resolve) => setTimeout(() => resolve(), 800));
+      
+      setUser({
+        id: '1',
+        name: 'Pedro Gonçalves',
+        email: 'pedrogoncalves@gmail.com',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        role: 'USER',
+      });
+      setToken('mock-google-token');
       setIsLoginOpen(false);
+      toast.show({ message: 'Login realizado com sucesso!', type: 'success' });
     } catch (e) {
-      setAuthError(e instanceof Error ? e.message : 'Erro ao fazer login');
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleRegister = async (name: string, email: string, pass: string) => {
-    setAuthError(null);
-    setIsLoggingIn(true);
-    try {
-      const res = await registerWithEmail(name, email, pass);
-      setUser(res.user);
-      setToken(res.accessToken);
-      setIsLoginOpen(false);
-    } catch (e) {
-      setAuthError(e instanceof Error ? e.message : 'Erro ao cadastrar');
+      const errorMsg = e instanceof Error ? e.message : 'Erro ao fazer login com Google';
+      setAuthError(errorMsg);
+      toast.show({ message: errorMsg, type: 'error' });
     } finally {
       setIsLoggingIn(false);
     }
@@ -168,8 +164,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
               onPress={() => setIsLoginOpen(false)}
             />
             <LoginDialog
-              onLoginPress={(e, p) => { void handleLogin(e, p); }}
-              onRegisterPress={(n, e, p) => { void handleRegister(n, e, p); }}
+              onGooglePress={() => { void handleGoogleLogin(); }}
               loading={isLoggingIn}
               errorMessage={authError}
             />

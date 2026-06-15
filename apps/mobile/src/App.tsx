@@ -7,6 +7,8 @@ import { RootNavigator } from './navigation/RootNavigator';
 import { AuthProvider } from './contexts/AuthContext';
 import { StripeProvider } from './utils/stripe';
 
+import { ToastProvider } from './contexts/ToastContext';
+
 import NunitoFont from '../assets/fonts/Nunito-Variable.ttf';
 
 export default function App() {
@@ -31,9 +33,11 @@ export default function App() {
     <SafeAreaProvider>
       <StripeProvider publishableKey={stripeKey}>
         <AuthProvider>
-          <NavigationContainer>
-            <RootNavigator />
-          </NavigationContainer>
+          <ToastProvider>
+            <NavigationContainer>
+              <RootNavigator />
+            </NavigationContainer>
+          </ToastProvider>
         </AuthProvider>
       </StripeProvider>
     </SafeAreaProvider>

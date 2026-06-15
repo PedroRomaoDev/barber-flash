@@ -7,6 +7,7 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { Feather } from '@expo/vector-icons';
+import { useToast } from '../contexts/ToastContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyAppointments'>;
 
@@ -24,6 +25,7 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
   const { token } = useAuth();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   useEffect(() => {
     const fetchBookings = async () => {
@@ -47,6 +49,7 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
         }
       } catch (error) {
         console.error('Failed to fetch bookings', error);
+        toast.show({ message: 'Erro ao carregar agendamentos.', type: 'error' });
       } finally {
         setLoading(false);
       }

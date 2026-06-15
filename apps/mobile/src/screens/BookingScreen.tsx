@@ -9,6 +9,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { useStripe } from '../utils/stripe';
+import { useToast } from '../contexts/ToastContext';
 
 interface Service {
   id: string;
@@ -73,18 +74,22 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
   }, [barbershopId]);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
+  const toast = useToast();
 
   const handleOpenPayment = async () => {
     if (!user || !token) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Faça login para continuar com o agendamento.' });
+      toast.show({ message: 'Faça login para continuar com o agendamento.', type: 'error' });
       return;
     }
     if (!selectedBarberId) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Selecione um barbeiro.' });
+      toast.show({ message: 'Selecione um barbeiro para continuar.', type: 'error' });
       return;
     }
     if (!selectedTime) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Selecione um horário.' });
+      toast.show({ message: 'Selecione um horário para continuar.', type: 'error' });
       return;
     }
     await processPaymentAndBooking();
@@ -169,6 +174,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
 
       if (response.ok) {
         setModal({ visible: true, type: 'success', title: 'Sucesso!', message: `Pagamento aprovado na Stripe e reserva confirmada!` });
+        toast.show({ message: '🎉 Reserva confirmada com sucesso!', type: 'success', duration: 4000 });
       } else {
         const errData = (await response.json()) as { message?: string };
         if (errData.message && errData.message.includes('disponível')) {
@@ -180,8 +186,10 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
       const error = e as Error;
       if (error.message === 'CONFLITO_HORARIO') {
         setModal({ visible: true, type: 'error', title: 'Ops!', message: 'Este horário não está mais disponível para este barbeiro. Escolha outro horário.' });
+        toast.show({ message: 'Horário indisponível, escolha outro.', type: 'error' });
       } else {
         setModal({ visible: true, type: 'error', title: 'Erro', message: error.message || 'Ocorreu um erro ao processar o agendamento.' });
+        toast.show({ message: error.message || 'Erro ao processar o agendamento.', type: 'error' });
       }
     }
   };

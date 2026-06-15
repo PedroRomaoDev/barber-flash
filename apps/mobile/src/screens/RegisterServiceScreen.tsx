@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { useToast } from '../contexts/ToastContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RegisterService'>;
 
@@ -27,6 +28,7 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
   const [barbershops, setBarbershops] = useState<Barbershop[]>([]);
   const [selectedShop, setSelectedShop] = useState<string | null>(null);
   const [modal, setModal] = useState<{ visible: boolean, type: 'success' | 'error', title: string, message: string }>({ visible: false, type: 'success', title: '', message: '' });
+  const toast = useToast();
 
   useEffect(() => {
     const fetchShops = async () => {
@@ -53,6 +55,7 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
   const handleRegister = async () => {
     if (!name || !price || !duration || !selectedShop) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Preencha os campos obrigatórios e selecione a barbearia.' });
+      toast.show({ message: 'Preencha os campos obrigatórios!', type: 'error' });
       return;
     }
     setLoading(true);
@@ -80,11 +83,13 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
 
       if (response.ok) {
         setModal({ visible: true, type: 'success', title: 'Sucesso', message: 'Serviço cadastrado com sucesso!' });
+        toast.show({ message: 'Serviço cadastrado com sucesso!', type: 'success' });
       } else {
         throw new Error('Falha ao registrar serviço');
       }
     } catch {
       setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao registrar o serviço.' });
+      toast.show({ message: 'Ocorreu um erro ao registrar o serviço.', type: 'error' });
     } finally {
       setLoading(false);
     }

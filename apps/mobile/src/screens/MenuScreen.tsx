@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { View, ScrollView, Pressable, Platform, Text, Animated, PanResponder, StyleSheet } from 'react-native';
+import { View, ScrollView, Pressable, Platform, Text, Animated, PanResponder, StyleSheet, Image } from 'react-native';
 import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './menu/menuStyles';
@@ -16,8 +16,8 @@ import {
 } from './menu/components';
 import { serviceItems } from './menu/data';
 
-import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 type MenuScreenProps = {
   visible?: boolean;
@@ -37,6 +37,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
   const [authError, setAuthError] = useState<string | null>(null);
   const { user, setUser, setToken } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
+  const toast = useToast();
 
   const [ownedShopsCount, setOwnedShopsCount] = useState(0);
   const slideAnim = useRef(new Animated.Value(300)).current; // Start hidden
@@ -98,31 +99,26 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
   const dialogOpen = showLoginDialog || isLoginOpen || isLogoutConfirmOpen;
   const dimMenu = dimmed || dialogOpen;
 
-  const handleLogin = async (email: string, pass: string) => {
+  const handleGoogleLogin = async () => {
     setAuthError(null);
     setIsLoggingIn(true);
     try {
-      const res = await loginWithEmail(email, pass);
-      setUser(res.user);
-      setToken(res.accessToken);
+      await new Promise<void>((resolve) => setTimeout(() => resolve(), 800));
+      
+      setUser({
+        id: '1',
+        name: 'Pedro Gonçalves',
+        email: 'pedrogoncalves@gmail.com',
+        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+        role: 'USER',
+      });
+      setToken('mock-google-token');
       setIsLoginOpen(false);
+      toast.show({ message: 'Login realizado com sucesso!', type: 'success' });
     } catch (e) {
-      setAuthError(e instanceof Error ? e.message : 'Erro ao fazer login');
-    } finally {
-      setIsLoggingIn(false);
-    }
-  };
-
-  const handleRegister = async (name: string, email: string, pass: string) => {
-    setAuthError(null);
-    setIsLoggingIn(true);
-    try {
-      const res = await registerWithEmail(name, email, pass);
-      setUser(res.user);
-      setToken(res.accessToken);
-      setIsLoginOpen(false);
-    } catch (e) {
-      setAuthError(e instanceof Error ? e.message : 'Erro ao cadastrar');
+      const errorMsg = e instanceof Error ? e.message : 'Erro ao fazer login com Google';
+      setAuthError(errorMsg);
+      toast.show({ message: errorMsg, type: 'error' });
     } finally {
       setIsLoggingIn(false);
     }
@@ -137,6 +133,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
     setUser(null);
     setToken(null);
     setOwnedShopsCount(0);
+    toast.show({ message: 'Logout realizado com sucesso!', type: 'info' });
   };
 
   const route = useRoute();
@@ -198,7 +195,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
     >
       <SafeAreaView style={styles.screen}>
         <View style={styles.overlay}>
-          <Pressable style={styles.dialogBackdrop} onPress={handleClose} />
+          <Pressable style={styles.overlayPressable} onPress={handleClose} />
           <Animated.View
             {...panResponder.panHandlers}
             style={[{ flex: 1, backgroundColor: '#141518' }, { transform: [{ translateX: slideAnim }] }]}
@@ -215,7 +212,11 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
               ) : (
                 <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 24 }}>
                   <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#26272B', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
-                    <Feather name="user" size={24} color="#838896" />
+                    {user.avatarUrl ? (
+                      <Image source={{ uri: user.avatarUrl }} style={{ width: '100%', height: '100%' }} />
+                    ) : (
+                      <Feather name="user" size={24} color="#838896" />
+                    )}
                   </View>
                   <View style={{ gap: 4 }}>
                     <Text style={{ color: '#FFF', fontSize: 16, fontFamily: 'Nunito_700Bold' }}>{user.name}</Text>
@@ -257,8 +258,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
               />
               {isLoginOpen && (
                 <LoginDialog
-                  onLoginPress={(e, p) => { void handleLogin(e, p); }}
-                  onRegisterPress={(n, e, p) => { void handleRegister(n, e, p); }}
+                  onGooglePress={() => { void handleGoogleLogin(); }}
                   loading={isLoggingIn}
                   errorMessage={authError}
                 />

@@ -1,88 +1,38 @@
-import React, { useState } from 'react';
-import { ActivityIndicator, Pressable, Text, TextInput, View } from 'react-native';
+import React from 'react';
+import { ActivityIndicator, Pressable, Text, View } from 'react-native';
 import { styles } from '../menuStyles';
+import { AntDesign } from '@expo/vector-icons';
 
 type LoginDialogProps = {
-  onLoginPress: (email: string, password: string) => void;
-  onRegisterPress: (name: string, email: string, password: string) => void;
+  onGooglePress: () => void;
   loading?: boolean;
   errorMessage?: string | null;
 };
 
 export const LoginDialog: React.FC<LoginDialogProps> = ({
-  onLoginPress,
-  onRegisterPress,
+  onGooglePress,
   loading = false,
   errorMessage = null,
 }) => {
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-
-  const handleSubmit = () => {
-    if (isRegistering) {
-      onRegisterPress(name, email, password);
-    } else {
-      onLoginPress(email, password);
-    }
-  };
-
   return (
     <View style={styles.dialogCard}>
       <View style={styles.dialogTextGroup}>
-        <Text style={styles.dialogTitle}>
-          {isRegistering ? 'Crie sua conta' : 'Faça login na plataforma'}
-        </Text>
-        <Text style={styles.dialogSubtitle}>
-          {isRegistering ? 'Preencha os dados abaixo' : 'Conecte-se para continuar'}
-        </Text>
+        <Text style={styles.dialogTitle}>Faça login na plataforma</Text>
+        <Text style={styles.dialogSubtitle}>Conecte-se usando sua conta do Google</Text>
       </View>
 
-      {isRegistering && (
-        <TextInput
-          style={styles.dialogInput}
-          placeholder="Seu nome"
-          placeholderTextColor="#838896"
-          value={name}
-          onChangeText={setName}
-        />
-      )}
-
-      <TextInput
-        style={styles.dialogInput}
-        placeholder="Seu e-mail"
-        placeholderTextColor="#838896"
-        keyboardType="email-address"
-        autoCapitalize="none"
-        value={email}
-        onChangeText={setEmail}
-      />
-
-      <TextInput
-        style={styles.dialogInput}
-        placeholder="Sua senha"
-        placeholderTextColor="#838896"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-      />
-
       <Pressable
-        style={[styles.dialogButton, { backgroundColor: '#8162FF', borderColor: '#8162FF' }, loading && styles.dialogButtonDisabled]}
-        onPress={handleSubmit}
+        style={[
+          styles.dialogButton,
+          { backgroundColor: '#1E1E22', borderColor: '#26272B', paddingVertical: 12 },
+          loading && styles.dialogButtonDisabled,
+        ]}
+        onPress={onGooglePress}
         disabled={loading}
       >
-        <Text style={styles.dialogButtonText}>
-          {loading ? 'Aguarde...' : (isRegistering ? 'Cadastrar' : 'Entrar')}
-        </Text>
-        {loading && <ActivityIndicator size="small" color="#FFFFFF" />}
-      </Pressable>
-
-      <Pressable onPress={() => setIsRegistering(!isRegistering)}>
-        <Text style={styles.dialogLinkText}>
-          {isRegistering ? 'Já tenho uma conta' : 'Ainda não tenho conta'}
-        </Text>
+        <AntDesign name="google" size={18} color="#FFFFFF" />
+        <Text style={[styles.dialogButtonText, { fontFamily: 'Nunito_700Bold' }]}>Google</Text>
+        {loading && <ActivityIndicator size="small" color="#FFFFFF" style={{ marginLeft: 8 }} />}
       </Pressable>
 
       {!!errorMessage && (

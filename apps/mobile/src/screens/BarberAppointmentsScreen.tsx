@@ -8,6 +8,7 @@ import { Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { useFocusEffect } from '@react-navigation/native';
+import { useToast } from '../contexts/ToastContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BarberAppointments'>;
 
@@ -25,6 +26,7 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
   const { token } = useAuth();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const toast = useToast();
 
   const fetchBookings = async () => {
     try {
@@ -47,6 +49,7 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
       }
     } catch (error) {
       console.error('Failed to fetch barber bookings', error);
+      toast.show({ message: 'Erro ao carregar pedidos.', type: 'error' });
     } finally {
       setLoading(false);
     }
@@ -83,9 +86,12 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
 
       if (response.ok) {
         void fetchBookings();
+        const label = status === 'CONFIRMED' ? 'confirmado' : 'cancelado';
+        toast.show({ message: `Agendamento ${label} com sucesso!`, type: status === 'CONFIRMED' ? 'success' : 'info' });
       }
     } catch (e) {
       console.error(e);
+      toast.show({ message: 'Erro ao atualizar status do agendamento.', type: 'error' });
     }
   };
 

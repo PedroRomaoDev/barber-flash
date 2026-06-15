@@ -8,6 +8,7 @@ import { useAuth } from '../contexts/AuthContext';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import { FeedbackModal } from '../components/FeedbackModal';
+import { useToast } from '../contexts/ToastContext';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RegisterBarbershop'>;
 
@@ -17,10 +18,12 @@ export const RegisterBarbershopScreen: React.FC<Props> = ({ navigation }) => {
   const [address, setAddress] = useState('');
   const [loading, setLoading] = useState(false);
   const [modal, setModal] = useState<{ visible: boolean, type: 'success' | 'error', title: string, message: string }>({ visible: false, type: 'success', title: '', message: '' });
+  const toast = useToast();
 
   const handleRegister = async () => {
     if (!name || !address) {
       setModal({ visible: true, type: 'error', title: 'Atenção', message: 'Preencha todos os campos.' });
+      toast.show({ message: 'Preencha todos os campos!', type: 'error' });
       return;
     }
     setLoading(true);
@@ -40,11 +43,13 @@ export const RegisterBarbershopScreen: React.FC<Props> = ({ navigation }) => {
 
       if (response.ok) {
         setModal({ visible: true, type: 'success', title: 'Sucesso', message: 'Barbearia criada com sucesso!' });
+        toast.show({ message: 'Barbearia criada com sucesso!', type: 'success' });
       } else {
         throw new Error('Falha ao criar barbearia');
       }
     } catch {
       setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao criar a barbearia.' });
+      toast.show({ message: 'Ocorreu um erro ao criar a barbearia.', type: 'error' });
     } finally {
       setLoading(false);
     }
