@@ -5,10 +5,12 @@ import { assets } from '../assets';
 
 import { Feather } from '@expo/vector-icons';
 
+import { ImageSourcePropType } from 'react-native';
+
 type BarberCardProps = {
   name: string;
   address: string;
-  image: any;
+  image: ImageSourcePropType;
 };
 
 export const BarberCard: React.FC<BarberCardProps> = ({

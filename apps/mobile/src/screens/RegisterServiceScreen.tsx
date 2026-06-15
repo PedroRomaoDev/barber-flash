@@ -11,6 +11,12 @@ import { FeedbackModal } from '../components/FeedbackModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RegisterService'>;
 
+interface Barbershop {
+  id: string;
+  name: string;
+  owner?: { id?: string };
+}
+
 export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
   const { user, token } = useAuth();
   const [name, setName] = useState('');
@@ -18,7 +24,7 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
   const [price, setPrice] = useState('');
   const [duration, setDuration] = useState('');
   const [loading, setLoading] = useState(false);
-  const [barbershops, setBarbershops] = useState<any[]>([]);
+  const [barbershops, setBarbershops] = useState<Barbershop[]>([]);
   const [selectedShop, setSelectedShop] = useState<string | null>(null);
   const [modal, setModal] = useState<{ visible: boolean, type: 'success' | 'error', title: string, message: string }>({ visible: false, type: 'success', title: '', message: '' });
 
@@ -33,15 +39,15 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
         }
         const response = await fetch(`http://${host}:3000/barbershops`);
         if (response.ok) {
-          const data = await response.json();
-          const myShops = data.filter((shop: any) => shop.owner?.id === user?.id);
+          const data = (await response.json()) as Barbershop[];
+          const myShops = data.filter((shop) => shop.owner?.id === user?.id);
           setBarbershops(myShops);
         }
       } catch (e) {
         console.error(e);
       }
     };
-    if (user) fetchShops();
+    if (user) void fetchShops();
   }, [user]);
 
   const handleRegister = async () => {
@@ -77,7 +83,7 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
       } else {
         throw new Error('Falha ao registrar serviço');
       }
-    } catch (e) {
+    } catch {
       setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao registrar o serviço.' });
     } finally {
       setLoading(false);
@@ -162,7 +168,7 @@ export const RegisterServiceScreen: React.FC<Props> = ({ navigation }) => {
           onChangeText={setDuration}
         />
 
-        <Pressable style={styles.button} onPress={handleRegister} disabled={loading}>
+        <Pressable style={styles.button} onPress={() => { void handleRegister(); }} disabled={loading}>
           {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.buttonText}>Cadastrar Serviço</Text>}
         </Pressable>
       </ScrollView>

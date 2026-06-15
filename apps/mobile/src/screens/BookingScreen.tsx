@@ -10,13 +10,31 @@ import { Feather } from '@expo/vector-icons';
 import { FeedbackModal } from '../components/FeedbackModal';
 import { useStripe } from '../utils/stripe';
 
+interface Service {
+  id: string;
+  name: string;
+  price: string | number;
+}
+
+interface Barber {
+  id: string;
+  user?: { name?: string };
+}
+
+interface Barbershop {
+  id: string;
+  name: string;
+  barbers?: Barber[];
+  services?: Service[];
+}
+
 type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
 
 export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
   const { barbershopId, serviceId } = route.params;
   const { user, token } = useAuth();
 
-  const [barbershop, setBarbershop] = useState<any>(null);
+  const [barbershop, setBarbershop] = useState<Barbershop | null>(null);
   const [loading, setLoading] = useState(true);
   const [selectedBarberId, setSelectedBarberId] = useState<string | null>(null);
 
@@ -38,7 +56,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
 
         const response = await fetch(`http://${host}:3000/barbershops/${barbershopId}`);
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as Barbershop;
           if (!data.barbers || data.barbers.length === 0) {
             data.barbers = [{ id: 'mock-1', user: { name: 'João Barbeiro (Mock)' } }];
           }
@@ -51,10 +69,9 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         setLoading(false);
       }
     };
-    fetchDetails();
+    void fetchDetails();
   }, [barbershopId]);
 
-  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
 
   const handleOpenPayment = async () => {
@@ -74,7 +91,6 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
   };
 
   const processPaymentAndBooking = async () => {
-    setIsProcessingPayment(true);
     
     try {
       let host = 'localhost';
@@ -102,7 +118,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         throw new Error(`Falha na API: ${errorText}`);
       }
 
-      const { clientSecret } = await intentResponse.json();
+      const { clientSecret } = (await intentResponse.json()) as { clientSecret: string };
 
       // 2. Inicializar o Payment Sheet nativo
       const { error: initError } = await initPaymentSheet({
@@ -110,7 +126,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         paymentIntentClientSecret: clientSecret,
         allowsDelayedPaymentMethods: true,
         defaultBillingDetails: {
-          name: user.name,
+          name: user!.name,
         }
       });
 
@@ -123,9 +139,9 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
       const { error: paymentError } = await presentPaymentSheet();
 
       if (paymentError) {
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
         if (paymentError.code === 'Canceled') {
           // Usuário fechou o modal
-          setIsProcessingPayment(false);
           return;
         }
         throw new Error(`Pagamento recusado: ${paymentError.message}`);
@@ -154,20 +170,19 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
       if (response.ok) {
         setModal({ visible: true, type: 'success', title: 'Sucesso!', message: `Pagamento aprovado na Stripe e reserva confirmada!` });
       } else {
-        const errData = await response.json();
+        const errData = (await response.json()) as { message?: string };
         if (errData.message && errData.message.includes('disponível')) {
           throw new Error('CONFLITO_HORARIO');
         }
         throw new Error('Falha na API ao confirmar reserva');
       }
-    } catch (e: any) {
-      if (e.message === 'CONFLITO_HORARIO') {
+    } catch (e: unknown) {
+      const error = e as Error;
+      if (error.message === 'CONFLITO_HORARIO') {
         setModal({ visible: true, type: 'error', title: 'Ops!', message: 'Este horário não está mais disponível para este barbeiro. Escolha outro horário.' });
       } else {
-        setModal({ visible: true, type: 'error', title: 'Erro', message: e.message || 'Ocorreu um erro ao processar o agendamento.' });
+        setModal({ visible: true, type: 'error', title: 'Erro', message: error.message || 'Ocorreu um erro ao processar o agendamento.' });
       }
-    } finally {
-      setIsProcessingPayment(false);
     }
   };
 
@@ -187,7 +202,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
     );
   }
 
-  const selectedService = barbershop.services?.find((s: any) => s.id === serviceId);
+  const selectedService = barbershop.services?.find((s) => s.id === serviceId);
 
   return (
     <SafeAreaView style={styles.screen}>
@@ -216,7 +231,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         <Text style={styles.sectionTitle}>Selecione o Barbeiro</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.horizontalList}>
           {barbershop.barbers && barbershop.barbers.length > 0 ? (
-            barbershop.barbers.map((barber: any) => (
+            barbershop.barbers.map((barber) => (
               <Pressable
                 key={barber.id}
                 style={[styles.barberChip, selectedBarberId === barber.id && styles.barberChipActive]}
@@ -273,7 +288,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
           <Text style={styles.totalLabel}>Total</Text>
           <Text style={styles.totalPrice}>R$ {selectedService?.price}</Text>
         </View>
-        <Pressable style={styles.confirmButton} onPress={handleOpenPayment}>
+        <Pressable style={styles.confirmButton} onPress={() => { void handleOpenPayment(); }}>
           <Text style={styles.confirmButtonText}>Pagar e Reservar</Text>
         </Pressable>
       </View>

@@ -50,7 +50,7 @@ export const styles = StyleSheet.create({
     fontSize: 20,
     fontFamily: 'Nunito_700Bold',
     fontWeight: 700,
-    paddingInline: 10,
+    paddingHorizontal: 10,
     lineHeight: 24,
     textAlign: 'center',
     borderRadius: 10,

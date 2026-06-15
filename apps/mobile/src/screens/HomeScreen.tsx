@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ScrollView, View, StyleSheet, Platform, Text, Pressable, ActivityIndicator } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { ScrollView, View, Platform, Text, Pressable, ActivityIndicator, ImageSourcePropType } from 'react-native';
+import barbeariaImg from '../../assets/images/barbearia.png';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFocusEffect } from '@react-navigation/native';
@@ -49,7 +50,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
       const url = `http://${host}:3000/barbershops${query ? `?search=${encodeURIComponent(query)}` : ''}`;
       const response = await fetch(url);
       if (response.ok) {
-        const data = await response.json();
+        const data = (await response.json()) as BarberItem[];
         setBarbershops(data);
       }
     } catch (err) {
@@ -61,18 +62,18 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      fetchBarbershops(searchQuery);
+      void fetchBarbershops(searchQuery);
     }, [searchQuery])
   );
 
-  const getBarberImage = (imageUrl: string) => {
-    if (!imageUrl) return require('../../assets/images/barbearia.png');
+  const getBarberImage = (imageUrl: unknown): ImageSourcePropType => {
+    if (!imageUrl || typeof imageUrl !== 'string') return barbeariaImg;
     if (imageUrl.startsWith('http')) return { uri: imageUrl };
     if (imageUrl === 'barberOne') return assets.barberOne;
     if (imageUrl === 'barberTwo') return assets.barberTwo;
     if (imageUrl === 'barberThree') return assets.barberThree;
     if (imageUrl === 'barberFour') return assets.barberFour;
-    return require('../../assets/images/barbearia.png');
+    return barbeariaImg;
   };
 
   const getPopularBarbershops = () => {

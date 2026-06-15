@@ -43,7 +43,7 @@ export const RegisterBarbershopScreen: React.FC<Props> = ({ navigation }) => {
       } else {
         throw new Error('Falha ao criar barbearia');
       }
-    } catch (e) {
+    } catch {
       setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao criar a barbearia.' });
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ export const RegisterBarbershopScreen: React.FC<Props> = ({ navigation }) => {
           onChangeText={setAddress}
         />
 
-        <Pressable style={styles.button} onPress={handleRegister} disabled={loading}>
+        <Pressable style={styles.button} onPress={() => { void handleRegister(); }} disabled={loading}>
           {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.buttonText}>Cadastrar</Text>}
         </Pressable>
       </View>

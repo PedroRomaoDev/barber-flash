@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import barbeariaImg from '../../assets/images/barbearia.png';
 import { View, Text, StyleSheet, ActivityIndicator, Image, Pressable, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -13,9 +14,23 @@ import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BarbershopDetails'>;
 
+interface Service {
+  id: string;
+  name: string;
+  description: string;
+  price: string | number;
+}
+
+interface BarbershopDetails {
+  id: string;
+  name: string;
+  address: string;
+  services: Service[];
+}
+
 export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
   const { id } = route.params;
-  const [barbershop, setBarbershop] = useState<any>(null);
+  const [barbershop, setBarbershop] = useState<BarbershopDetails | null>(null);
   const [loading, setLoading] = useState(true);
 
   const { user, setUser, setToken } = useAuth();
@@ -26,7 +41,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   const handleBook = (serviceId: string) => {
     if (!user) {
       setIsLoginOpen(true);
-    } else {
+    } else if (barbershop) {
       navigation.navigate('Booking', { barbershopId: barbershop.id, serviceId });
     }
   };
@@ -76,7 +91,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
 
         const response = await fetch(`http://${host}:3000/barbershops/${id}`);
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as BarbershopDetails;
           setBarbershop(data);
         }
       } catch (error) {
@@ -85,7 +100,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
         setLoading(false);
       }
     };
-    fetchDetails();
+    void fetchDetails();
   }, [id]);
 
   if (loading) {
@@ -111,7 +126,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
     <SafeAreaView style={styles.screen}>
       <ScrollView>
         <View style={styles.headerImageContainer}>
-          <Image source={require('../../assets/images/barbearia.png')} style={{ width: '100%', height: '100%', position: 'absolute' }} resizeMode="cover" />
+          <Image source={barbeariaImg} style={{ width: '100%', height: '100%', position: 'absolute' }} resizeMode="cover" />
           <Pressable style={styles.backIcon} onPress={() => navigation.goBack()}>
             <Feather name="chevron-left" size={24} color="#FFF" />
           </Pressable>
@@ -122,7 +137,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           <Text style={styles.address}>{barbershop.address}</Text>
 
           <Text style={styles.sectionTitle}>Serviços</Text>
-          {barbershop.services?.map((service: any) => (
+          {barbershop.services?.map((service) => (
             <View key={service.id} style={styles.serviceCard}>
               <View>
                 <Text style={styles.serviceName}>{service.name}</Text>
@@ -153,8 +168,8 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
               onPress={() => setIsLoginOpen(false)}
             />
             <LoginDialog
-              onLoginPress={handleLogin}
-              onRegisterPress={handleRegister}
+              onLoginPress={(e, p) => { void handleLogin(e, p); }}
+              onRegisterPress={(n, e, p) => { void handleRegister(n, e, p); }}
               loading={isLoggingIn}
               errorMessage={authError}
             />

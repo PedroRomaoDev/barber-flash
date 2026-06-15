@@ -1,20 +1,20 @@
-import { menuAssets } from './assets';
-
 export type MenuItem = {
   id: string;
   label: string;
-  icon: string | number | any;
+  icon: string | number;
   active?: boolean;
 };
 
 export const primaryItems: MenuItem[] = [
+  { id: 'home', label: 'Início', icon: 'home', active: true },
+  { id: 'my-appointments', label: 'Agendamentos', icon: 'calendar' },
 ];
 
 export const serviceItems: MenuItem[] = [
-  { id: 'hair', label: 'Cabelo', icon: menuAssets.iconScissors },
-  { id: 'beard', label: 'Barba', icon: menuAssets.iconMustache },
-  { id: 'finish', label: 'Acabamento', icon: menuAssets.iconRazor },
-  { id: 'eyebrow', label: 'Sobrancelha', icon: menuAssets.iconEyebrow },
-  { id: 'massage', label: 'Massagem', icon: menuAssets.iconTowel },
-  { id: 'hydrate', label: 'Hidratação', icon: menuAssets.iconShampoo },
+  { id: 'hair', label: 'Cabelo', icon: 'scissors-cutting' },
+  { id: 'beard', label: 'Barba', icon: 'mustache' },
+  { id: 'finish', label: 'Acabamento', icon: 'razor-double-edge' },
+  { id: 'eyebrow', label: 'Sobrancelha', icon: 'eye-outline' },
+  { id: 'massage', label: 'Massagem', icon: 'spa' },
+  { id: 'hydrate', label: 'Hidratação', icon: 'water' },
 ];

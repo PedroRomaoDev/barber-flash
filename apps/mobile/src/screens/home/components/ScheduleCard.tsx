@@ -4,11 +4,13 @@ import { styles } from '../homeStyles';
 
 import { Feather } from '@expo/vector-icons';
 
+import { ImageSourcePropType } from 'react-native';
+
 type ScheduleCardProps = {
   status: string;
   service: string;
   barberName: string;
-  avatar: any;
+  avatar?: ImageSourcePropType | null;
   month: string;
   day: string;
   time: string;

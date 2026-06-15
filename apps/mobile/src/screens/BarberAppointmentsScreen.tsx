@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -11,9 +11,19 @@ import { useFocusEffect } from '@react-navigation/native';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BarberAppointments'>;
 
+interface BookingItem {
+  id: string;
+  client?: { name?: string };
+  status: string;
+  service?: { name?: string };
+  barbershop?: { name?: string };
+  scheduledAt: string | number | Date;
+  priceSnapshot: string | number;
+}
+
 export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
-  const { token, user } = useAuth();
-  const [bookings, setBookings] = useState<any[]>([]);
+  const { token } = useAuth();
+  const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchBookings = async () => {
@@ -32,7 +42,7 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       if (response.ok) {
-        const data = await response.json();
+        const data = (await response.json()) as BookingItem[];
         setBookings(data);
       }
     } catch (error) {
@@ -46,7 +56,7 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
     useCallback(() => {
       if (token) {
         setLoading(true);
-        fetchBookings();
+        void fetchBookings();
       } else {
         setLoading(false);
       }
@@ -72,14 +82,14 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
       });
 
       if (response.ok) {
-        fetchBookings();
+        void fetchBookings();
       }
     } catch (e) {
       console.error(e);
     }
   };
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({ item }: { item: BookingItem }) => {
     const date = new Date(item.scheduledAt);
     return (
       <View style={styles.card}>
@@ -93,10 +103,10 @@ export const BarberAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.price}>R$ {item.priceSnapshot}</Text>
           {item.status === 'PENDING' && (
             <View style={styles.actionButtons}>
-              <Pressable style={styles.rejectButton} onPress={() => updateStatus(item.id, 'CANCELLED')}>
+              <Pressable style={styles.rejectButton} onPress={() => { void updateStatus(item.id, 'CANCELLED'); }}>
                 <Feather name="x" size={20} color="#FFF" />
               </Pressable>
-              <Pressable style={styles.acceptButton} onPress={() => updateStatus(item.id, 'CONFIRMED')}>
+              <Pressable style={styles.acceptButton} onPress={() => { void updateStatus(item.id, 'CONFIRMED'); }}>
                 <Feather name="check" size={20} color="#FFF" />
               </Pressable>
             </View>

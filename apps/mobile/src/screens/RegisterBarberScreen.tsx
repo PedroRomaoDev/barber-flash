@@ -11,11 +11,16 @@ import { FeedbackModal } from '../components/FeedbackModal';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RegisterBarber'>;
 
+interface Barbershop {
+  id: string;
+  name: string;
+}
+
 export const RegisterBarberScreen: React.FC<Props> = ({ navigation }) => {
   const { user, token } = useAuth();
   const [bio, setBio] = useState('');
   const [loading, setLoading] = useState(false);
-  const [barbershops, setBarbershops] = useState<any[]>([]);
+  const [barbershops, setBarbershops] = useState<Barbershop[]>([]);
   const [selectedShop, setSelectedShop] = useState<string | null>(null);
   const [modal, setModal] = useState<{ visible: boolean, type: 'success' | 'error', title: string, message: string }>({ visible: false, type: 'success', title: '', message: '' });
 
@@ -30,14 +35,14 @@ export const RegisterBarberScreen: React.FC<Props> = ({ navigation }) => {
         }
         const response = await fetch(`http://${host}:3000/barbershops`);
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as Barbershop[];
           setBarbershops(data);
         }
       } catch (e) {
         console.error(e);
       }
     };
-    fetchShops();
+    void fetchShops();
   }, []);
 
   const handleRegister = async () => {
@@ -68,7 +73,7 @@ export const RegisterBarberScreen: React.FC<Props> = ({ navigation }) => {
       } else {
         throw new Error('Falha ao registrar barbeiro');
       }
-    } catch (e) {
+    } catch {
       setModal({ visible: true, type: 'error', title: 'Erro', message: 'Ocorreu um erro ao registrar.' });
     } finally {
       setLoading(false);
@@ -124,7 +129,7 @@ export const RegisterBarberScreen: React.FC<Props> = ({ navigation }) => {
           onChangeText={setBio}
         />
 
-        <Pressable style={styles.button} onPress={handleRegister} disabled={loading}>
+        <Pressable style={styles.button} onPress={() => { void handleRegister(); }} disabled={loading}>
           {loading ? <ActivityIndicator color="#FFF" /> : <Text style={styles.buttonText}>Registrar</Text>}
         </Pressable>
       </ScrollView>

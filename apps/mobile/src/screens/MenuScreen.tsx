@@ -1,8 +1,9 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
 import { View, ScrollView, Pressable, Platform, Text, Animated, PanResponder, StyleSheet } from 'react-native';
+import { Feather } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { styles } from './menu/menuStyles';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../navigation/RootNavigator';
 import Constants from 'expo-constants';
@@ -13,7 +14,7 @@ import {
   LoginRow,
   LoginDialog,
 } from './menu/components';
-import { primaryItems, serviceItems } from './menu/data';
+import { serviceItems } from './menu/data';
 
 import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 import { useAuth } from '../contexts/AuthContext';
@@ -59,14 +60,14 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
             }
             const res = await fetch(`http://${host}:3000/barbershops?ownerId=${user.id}`);
             if (res.ok) {
-              const data = await res.json();
+              const data = (await res.json()) as { length: number };
               setOwnedShopsCount(data.length);
             }
           } catch (e) {
             console.error(e);
           }
         };
-        fetchOwnedShops();
+        void fetchOwnedShops();
       }
     }
   }, [visible, user]);
@@ -138,27 +139,32 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
     setOwnedShopsCount(0);
   };
 
-  const loginLabel = useMemo(() => {
-    if (user?.name) {
-      return `Olá, ${user.name}!`;
-    }
-    return 'Olá. Faça seu login!';
-  }, [user]);
+  const route = useRoute();
+  const currentRouteName = route.name || 'Home';
 
   // Extend menu items dynamically based on auth
-  const dynamicPrimaryItems = [...primaryItems];
-  if (user) {
-    dynamicPrimaryItems.push({ id: 'my-appointments', label: 'Meus Agendamentos', icon: 'calendar' });
-    dynamicPrimaryItems.push({ id: 'register-barbershop', label: 'Cadastrar Barbearia', icon: 'briefcase' });
-    if (ownedShopsCount > 0) {
-      dynamicPrimaryItems.push({ id: 'register-service', label: 'Cadastrar Serviço', icon: 'scissors' });
+  const dynamicPrimaryItems = useMemo(() => {
+    const items = [
+      { id: 'home', label: 'Início', icon: 'home', active: currentRouteName === 'Home' },
+      { id: 'my-appointments', label: 'Agendamentos', icon: 'calendar', active: currentRouteName === 'MyAppointments' },
+    ];
+
+    if (user) {
+      items.push({ id: 'register-barbershop', label: 'Cadastrar Barbearia', icon: 'briefcase', active: currentRouteName === 'RegisterBarbershop' });
+      if (ownedShopsCount > 0) {
+        items.push({ id: 'register-service', label: 'Cadastrar Serviço', icon: 'scissors', active: currentRouteName === 'RegisterService' });
+      }
+      items.push({ id: 'register-barber', label: 'Cadastrar Barbeiro', icon: 'user-plus', active: currentRouteName === 'RegisterBarber' });
     }
-    dynamicPrimaryItems.push({ id: 'register-barber', label: 'Cadastrar Barbeiro', icon: 'user-plus' });
-    dynamicPrimaryItems.push({ id: 'logout', label: 'Sair', icon: 'log-out' });
-  }
+
+    return items;
+  }, [user, ownedShopsCount, currentRouteName]);
 
   const handleAction = (id: string) => {
-    if (id === 'logout') handleLogout();
+    onClose();
+    if (id === 'home') {
+      navigation.navigate('Home');
+    }
     if (id === 'register-barbershop') {
       navigation.navigate('RegisterBarbershop');
     }
@@ -169,7 +175,11 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
       navigation.navigate('RegisterBarber');
     }
     if (id === 'my-appointments') {
-      navigation.navigate('MyAppointments');
+      if (!user) {
+        setIsLoginOpen(true);
+      } else {
+        navigation.navigate('MyAppointments');
+      }
     }
   };
 
@@ -201,15 +211,38 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
             >
               <MenuHeader onClose={handleClose} />
               {!user ? (
-                <LoginRow label={loginLabel} onPress={() => setIsLoginOpen(true)} />
+                <LoginRow label="Olá. Faça seu login!" onPress={() => setIsLoginOpen(true)} />
               ) : (
-                <View style={{ paddingVertical: 24 }}>
-                  <Text style={{ color: '#FFF', fontSize: 18, fontWeight: 'bold' }}>{loginLabel}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 12, paddingHorizontal: 20, paddingVertical: 24 }}>
+                  <View style={{ width: 48, height: 48, borderRadius: 24, backgroundColor: '#26272B', justifyContent: 'center', alignItems: 'center', overflow: 'hidden' }}>
+                    <Feather name="user" size={24} color="#838896" />
+                  </View>
+                  <View style={{ gap: 4 }}>
+                    <Text style={{ color: '#FFF', fontSize: 16, fontFamily: 'Nunito_700Bold' }}>{user.name}</Text>
+                    <Text style={{ color: '#838896', fontSize: 12, fontFamily: 'Nunito_400Regular' }}>{user.email}</Text>
+                  </View>
                 </View>
               )}
               <MenuDivider />
               <MenuGroup items={dynamicPrimaryItems} onAction={handleAction} />
+              
               <MenuDivider />
+              <MenuGroup items={serviceItems} />
+
+              {!!user && (
+                <>
+                  <MenuDivider />
+                  <View style={{ paddingHorizontal: 20, marginTop: 12 }}>
+                    <Pressable 
+                      style={[styles.menuButton, { flexDirection: 'row', alignItems: 'center', gap: 12 }]} 
+                      onPress={handleLogout}
+                    >
+                      <Feather name="log-out" size={16} color="#838896" />
+                      <Text style={[styles.menuLabel, { color: '#838896' }]}>Sair da conta</Text>
+                    </Pressable>
+                  </View>
+                </>
+              )}
 
             </ScrollView>
           </Animated.View>
@@ -224,8 +257,8 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
               />
               {isLoginOpen && (
                 <LoginDialog
-                  onLoginPress={handleLogin}
-                  onRegisterPress={handleRegister}
+                  onLoginPress={(e, p) => { void handleLogin(e, p); }}
+                  onRegisterPress={(n, e, p) => { void handleRegister(n, e, p); }}
                   loading={isLoggingIn}
                   errorMessage={authError}
                 />

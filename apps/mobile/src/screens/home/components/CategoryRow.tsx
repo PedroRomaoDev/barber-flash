@@ -15,7 +15,7 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({ categories }) => (
     contentContainerStyle={styles.categoryRow}
   >
     {categories.map((category) => {
-      let iconName: any = 'help-circle-outline';
+      let iconName = 'help-circle-outline' as React.ComponentProps<typeof MaterialCommunityIcons>['name'];
       if (category.label === 'Cabelo') {
         iconName = 'scissors-cutting';
       } else if (category.label === 'Barba') {

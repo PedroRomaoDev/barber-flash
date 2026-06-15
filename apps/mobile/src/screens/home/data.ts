@@ -1,16 +1,18 @@
 import { assets } from './assets';
 
+import { ImageSourcePropType } from 'react-native';
+
 export type CategoryItem = {
   id: string;
   label: string;
-  icon?: string | number | any;
+  icon?: ImageSourcePropType;
 };
 
 export type BarberItem = {
   id: string;
   name: string;
   address: string;
-  imageUrl: string | number | any;
+  imageUrl: ImageSourcePropType;
   rating?: number;
   reviewCount?: number;
 };

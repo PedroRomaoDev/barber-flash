@@ -6,7 +6,7 @@ export const StripeProvider: React.FC<{ children: React.ReactNode; publishableKe
 
 export const useStripe = () => {
   return {
-    initPaymentSheet: async () => ({ error: null }),
-    presentPaymentSheet: async () => ({ error: null }),
+    initPaymentSheet: async () => { await Promise.resolve(); return { error: null }; },
+    presentPaymentSheet: async () => { await Promise.resolve(); return { error: null }; },
   };
 };

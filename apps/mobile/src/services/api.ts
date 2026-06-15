@@ -12,7 +12,7 @@ type ApiRequestOptions = {
 
 const resolveApiBaseUrl = (): string => {
   if (Constants.expoConfig?.hostUri) {
-    let hostIp = Constants.expoConfig.hostUri.split(':')[0];
+    const hostIp = Constants.expoConfig.hostUri.split(':')[0];
     return `http://${hostIp}:3000`;
   }
 
@@ -52,11 +52,17 @@ export async function apiFetch<T>(
     body,
   });
 
-  const payload = await response.json().catch(() => null);
+  const payload = (await response.json().catch(() => null)) as unknown;
   if (!response.ok) {
-    const message =
-      (payload && typeof payload.message === 'string' && payload.message) ||
-      'Erro ao comunicar com a API.';
+    let message = 'Erro ao comunicar com a API.';
+    if (
+      payload &&
+      typeof payload === 'object' &&
+      'message' in payload &&
+      typeof (payload as Record<string, unknown>).message === 'string'
+    ) {
+      message = (payload as Record<string, unknown>).message as string;
+    }
     throw new Error(message);
   }
 

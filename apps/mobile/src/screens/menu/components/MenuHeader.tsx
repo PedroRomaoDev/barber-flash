@@ -20,8 +20,8 @@ export const MenuHeader: React.FC<MenuHeaderProps> = ({ onClose }) => (
       <View style={[styles.closeIcon, { justifyContent: 'center', alignItems: 'center' }]}>
         {menuAssets.closeStrokeOne ? (
           <>
-            <Image source={menuAssets.closeStrokeOne as any} style={styles.closeLineOne} />
-            <Image source={menuAssets.closeStrokeTwo as any} style={styles.closeLineTwo} />
+            <Image source={menuAssets.closeStrokeOne} style={styles.closeLineOne} />
+            <Image source={menuAssets.closeStrokeTwo} style={styles.closeLineTwo} />
           </>
         ) : (
           <Feather name="x" size={24} color="#FFF" />

@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, Image, Pressable } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { styles } from '../menuStyles';
-import { menuAssets } from '../assets';
+import { Feather } from '@expo/vector-icons';
 
 type LoginRowProps = {
   onPress: () => void;
@@ -11,8 +11,8 @@ type LoginRowProps = {
 export const LoginRow: React.FC<LoginRowProps> = ({ onPress, label }) => (
   <Pressable style={styles.loginRow} onPress={onPress}>
     <Text style={styles.loginText}>{label}</Text>
-    <View style={styles.iconButtonSquare}>
-      <Text style={styles.loginText}> Fazer login</Text>
+    <View style={[styles.iconButtonSquare, { width: 36, height: 36, borderRadius: 10, paddingHorizontal: 0 }]}>
+      <Feather name="log-in" size={18} color="#FFF" />
     </View>
   </Pressable>
 );

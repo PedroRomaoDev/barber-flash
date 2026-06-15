@@ -10,9 +10,19 @@ import { Feather } from '@expo/vector-icons';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'MyAppointments'>;
 
+interface BookingItem {
+  id: string;
+  status: string;
+  scheduledAt: string | number | Date;
+  priceSnapshot: string | number;
+  barbershop?: { name?: string };
+  service?: { name?: string };
+  barber?: { user?: { name?: string } };
+}
+
 export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
   const { token } = useAuth();
-  const [bookings, setBookings] = useState<any[]>([]);
+  const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -32,7 +42,7 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
         });
 
         if (response.ok) {
-          const data = await response.json();
+          const data = (await response.json()) as BookingItem[];
           setBookings(data);
         }
       } catch (error) {
@@ -42,13 +52,13 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
       }
     };
     if (token) {
-      fetchBookings();
+      void fetchBookings();
     } else {
       setLoading(false);
     }
   }, [token]);
 
-  const renderItem = ({ item }: { item: any }) => {
+  const renderItem = ({ item }: { item: BookingItem }) => {
     const date = new Date(item.scheduledAt);
     return (
       <View style={styles.card}>
