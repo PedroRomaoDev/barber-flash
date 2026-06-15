@@ -108,13 +108,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <CategoryRow categories={categories} />
         <Banner
           titleLines={['Agende', 'nos melhores']}
-          subtitle="com FSW Barber"
+          subtitle="com Flash Barber"
         />
 
-        {userBookings.length > 0 && (
+        {!!user && (
           <View style={styles.section}>
             <SectionTitle text="AGENDAMENTOS" />
-            <ScheduleCard {...mockSchedule} />
+            {userBookings.length > 0 ? (
+              <ScheduleCard {...mockSchedule} />
+            ) : (
+              <Text style={{ color: '#838896', fontSize: 14, fontFamily: 'Nunito_400Regular', marginLeft: 20 }}>
+                Você não possui agendamentos.
+              </Text>
+            )}
           </View>
         )}
 
@@ -160,7 +166,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </ScrollView>
         </View>
 
-        <Footer brand="FSW Barber" />
+        <Footer brand="Flash Barber" />
       </ScrollView>
       <MenuScreen visible={menuOpen} onClose={() => setMenuOpen(false)} />
     </SafeAreaView>

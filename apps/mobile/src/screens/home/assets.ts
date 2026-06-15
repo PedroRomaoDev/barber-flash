@@ -7,7 +7,7 @@ export const assets = {
   categoryScissors: null,
   categoryMustache: null,
   categoryRazor: null,
-  bannerBackground: require('../../../assets/images/banner_illustration.png'),
+  bannerBackground: require('../../../assets/images/banner_illustration.svg'),
   bannerWindow: null,
   bannerStars: null,
   bannerCharacterTwo: null,

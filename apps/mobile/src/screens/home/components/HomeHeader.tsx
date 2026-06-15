@@ -15,7 +15,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({ onMenuPress, onBellPress
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 30 }}>
         <MaterialCommunityIcons name="content-cut" size={20} color="#8162FF" style={{ transform: [{ rotate: '-45deg' }] }} />
         <Text style={{ color: '#FFF', fontSize: 16, fontFamily: 'Nunito_700Bold', letterSpacing: 1 }}>
-          FSW <Text style={{ color: '#8162FF' }}>BARBER</Text>
+          Flash <Text style={{ color: '#8162FF' }}>BARBER</Text>
         </Text>
       </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
