@@ -8,7 +8,7 @@ import { Platform } from 'react-native';
 import { useAuth } from '../contexts/AuthContext';
 import { Feather } from '@expo/vector-icons';
 import { FeedbackModal } from '../components/FeedbackModal';
-import { useStripe } from '@stripe/stripe-react-native';
+import { useStripe } from '../utils/stripe';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Booking'>;
 

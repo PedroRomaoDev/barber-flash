@@ -5,7 +5,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { RootNavigator } from './navigation/RootNavigator';
 import { AuthProvider } from './contexts/AuthContext';
-import { StripeProvider } from '@stripe/stripe-react-native';
+import { StripeProvider } from './utils/stripe';
 
 export default function App() {
   const [fontsLoaded] = useFonts({
