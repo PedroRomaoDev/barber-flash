@@ -6,13 +6,12 @@ import { assets } from '../assets';
 import { Feather } from '@expo/vector-icons';
 
 const BannerArt: React.FC = () => (
-  <View style={[styles.bannerArt, { justifyContent: 'center', alignItems: 'center' }]}>
-    {assets.bannerWindow ? (
-      <>
-        <Image source={assets.bannerWindow} style={styles.bannerWindow} />
-        <Image source={assets.bannerStars} style={styles.bannerStars} />
-        <Image source={assets.bannerCharacterTwo} style={styles.bannerCharacterTwo} />
-      </>
+  <View style={{ position: 'absolute', right: -10, bottom: -10, top: -10, width: 160, justifyContent: 'center', alignItems: 'center' }}>
+    {assets.bannerBackground ? (
+      <Image
+        source={assets.bannerBackground}
+        style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+      />
     ) : (
       <Feather name="scissors" size={48} color="#8162FF" style={{ opacity: 0.5 }} />
     )}

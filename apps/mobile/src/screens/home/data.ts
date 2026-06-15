@@ -26,6 +26,9 @@ export const mockSchedule = {
 };
 
 export const categories: CategoryItem[] = [
+  { id: '1', label: 'Cabelo' },
+  { id: '2', label: 'Barba' },
+  { id: '3', label: 'Acabamento' },
 ];
 
 export const recommendedItems: BarberItem[] = [

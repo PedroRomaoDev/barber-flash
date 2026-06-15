@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Image, TouchableOpacity, Text } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { View, TouchableOpacity, Text } from 'react-native';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
 import { styles } from '../homeStyles';
-import { assets } from '../assets';
 
 type HomeHeaderProps = {
   onMenuPress: () => void;
@@ -13,10 +12,15 @@ type HomeHeaderProps = {
 export const HomeHeader: React.FC<HomeHeaderProps> = ({ onMenuPress, onBellPress, showBell }) => (
   <View style={styles.header}>
     <View style={styles.headerRow}>
-      <Text style={styles.marca} >BARBER FLASH</Text>
+      <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 30 }}>
+        <MaterialCommunityIcons name="content-cut" size={20} color="#8162FF" style={{ transform: [{ rotate: '-45deg' }] }} />
+        <Text style={{ color: '#FFF', fontSize: 16, fontFamily: 'Nunito_700Bold', letterSpacing: 1 }}>
+          FSW <Text style={{ color: '#8162FF' }}>BARBER</Text>
+        </Text>
+      </View>
       <View style={{ flexDirection: 'row', alignItems: 'center', gap: 16 }}>
         {showBell && (
-          <TouchableOpacity onPress={onBellPress} style={{ marginTop: 24 }}>
+          <TouchableOpacity onPress={onBellPress} style={{ marginTop: 30 }}>
             <Feather name="bell" size={24} color="#FFF" />
           </TouchableOpacity>
         )}

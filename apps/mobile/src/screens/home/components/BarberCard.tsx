@@ -39,10 +39,13 @@ export const BarberCard: React.FC<BarberCardProps> = ({
         <Text style={styles.barberName} numberOfLines={1}>
           {name}
         </Text>
-        <Text style={styles.barberAddress} numberOfLines={2}>
+        <Text style={styles.barberAddress} numberOfLines={1}>
           {address}
         </Text>
       </View>
+      <TouchableOpacity style={styles.reserveButton} activeOpacity={0.7}>
+        <Text style={styles.reserveButtonText}>Reservar</Text>
+      </TouchableOpacity>
     </View>
   </View>
 );

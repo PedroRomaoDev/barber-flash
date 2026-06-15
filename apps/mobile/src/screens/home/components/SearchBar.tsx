@@ -5,12 +5,12 @@ import { assets } from '../assets';
 
 import { Feather } from '@expo/vector-icons';
 
-const SearchIcon: React.FC = () => (
+const SearchIcon: React.FC<{ color?: string }> = ({ color = "#838896" }) => (
   <View style={[styles.searchIconBox, { justifyContent: 'center', alignItems: 'center' }]}>
     {assets.search ? (
       <Image source={assets.search} style={styles.searchIconBox} />
     ) : (
-      <Feather name="search" size={20} color="#838896" />
+      <Feather name="search" size={20} color={color} />
     )}
   </View>
 );
@@ -19,7 +19,7 @@ export const SearchBar: React.FC<{ value?: string, onChangeText?: (text: string)
   <View style={styles.searchRow}>
     <View style={styles.searchInputWrapper}>
       <TextInput
-        placeholder="Buscar barbearias..."
+        placeholder="Buscar"
         placeholderTextColor="#838896"
         style={styles.searchInput}
         value={value}
@@ -27,7 +27,7 @@ export const SearchBar: React.FC<{ value?: string, onChangeText?: (text: string)
       />
     </View>
     <View style={styles.searchButton}>
-      <SearchIcon />
+      <SearchIcon color="#FFF" />
     </View>
   </View>
 );

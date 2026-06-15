@@ -65,6 +65,27 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }, [searchQuery])
   );
 
+  const getBarberImage = (imageUrl: string) => {
+    if (!imageUrl) return require('../../assets/images/barbearia.png');
+    if (imageUrl.startsWith('http')) return { uri: imageUrl };
+    if (imageUrl === 'barberOne') return assets.barberOne;
+    if (imageUrl === 'barberTwo') return assets.barberTwo;
+    if (imageUrl === 'barberThree') return assets.barberThree;
+    if (imageUrl === 'barberFour') return assets.barberFour;
+    return require('../../assets/images/barbearia.png');
+  };
+
+  const getPopularBarbershops = () => {
+    const order = ['Los Barberos', 'Homem Elegante', 'Vintage Barber', 'Clássica Cortez'];
+    return [...barbershops].sort((a, b) => {
+      const idxA = order.indexOf(a.name);
+      const idxB = order.indexOf(b.name);
+      if (idxA === -1) return 1;
+      if (idxB === -1) return -1;
+      return idxA - idxB;
+    });
+  };
+
   const filteredBarbershops = barbershops;
 
   return (
@@ -79,15 +100,15 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           onBellPress={() => navigation.navigate('BarberAppointments')} 
         />
         <Greeting
-          title={user ? "Olá," : "Bem-vindo,"}
-          highlight={user ? user.name : "Faça login"}
+          title="Olá,"
+          highlight={user ? `${user.name}!` : "Faça seu Login!"}
           subtitle="Sexta, 2 de Fevereiro"
         />
         <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
         <CategoryRow categories={categories} />
         <Banner
           titleLines={['Agende', 'nos melhores']}
-          subtitle="com Barber Flash"
+          subtitle="com FSW Barber"
         />
 
         {userBookings.length > 0 && (
@@ -98,8 +119,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         )}
 
         <View style={styles.section}>
-          <SectionTitle text="BARBEARIAS" />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <SectionTitle text="RECOMENDADOS" />
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
             {loading ? (
               <ActivityIndicator size="small" color="#8162FF" />
             ) : filteredBarbershops.length === 0 ? (
@@ -110,7 +131,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                   <BarberCard
                     name={item.name}
                     address={item.address}
-                    image={item.imageUrl && item.imageUrl.startsWith('http') ? { uri: item.imageUrl } : require('../../assets/images/barbearia.png')}
+                    image={getBarberImage(item.imageUrl)}
                   />
                 </Pressable>
               ))
@@ -118,26 +139,28 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           </ScrollView>
         </View>
 
-        {/* <View style={styles.section}>
+        <View style={styles.section}>
           <SectionTitle text="POPULARES" />
-          <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
             {loading ? (
               <ActivityIndicator size="small" color="#8162FF" />
+            ) : filteredBarbershops.length === 0 ? (
+              <Text style={{ color: '#838896', marginLeft: 20 }}>Nenhuma barbearia encontrada.</Text>
             ) : (
-              filteredBarbershops.slice().reverse().map((item) => (
+              getPopularBarbershops().map((item) => (
                 <Pressable key={item.id} onPress={() => navigation.navigate('BarbershopDetails', { id: item.id })}>
                   <BarberCard
                     name={item.name}
                     address={item.address}
-                    image={item.imageUrl}
+                    image={getBarberImage(item.imageUrl)}
                   />
                 </Pressable>
               ))
             )}
           </ScrollView>
-        </View> */}
+        </View>
 
-        <Footer brand="Barber Flash" />
+        <Footer brand="FSW Barber" />
       </ScrollView>
       <MenuScreen visible={menuOpen} onClose={() => setMenuOpen(false)} />
     </SafeAreaView>
