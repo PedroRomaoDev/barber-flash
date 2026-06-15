@@ -71,8 +71,8 @@ export class BarbershopsService {
   }
 
   async seed(): Promise<string> {
-    await this.serviceRepository.delete({});
-    await this.barbershopRepository.delete({});
+    await this.serviceRepository.createQueryBuilder().delete().execute();
+    await this.barbershopRepository.createQueryBuilder().delete().execute();
     // continue with seed
 
     // Create a mock user for the barber
@@ -108,25 +108,25 @@ export class BarbershopsService {
       {
         name: 'Vintage Barber',
         address: 'Avenida São Sebastião, 357, São Paulo',
-        imageUrl: 'barberOne',
+        imageUrl: 'barber1.svg',
         barbers: [mockBarber],
       },
       {
         name: 'Clássica Cortez',
         address: 'Rua Castro Alves, 331, Sao Paulo',
-        imageUrl: 'barberTwo',
+        imageUrl: 'barber2.svg',
         barbers: [mockBarber],
       },
       {
         name: 'Los Barberos',
         address: 'Rua Sete de Setembro, 428, São Paulo',
-        imageUrl: 'barberThree',
+        imageUrl: 'barber3.svg',
         barbers: [mockBarber],
       },
       {
         name: 'Homem Elegante',
         address: 'Rua Projetada, 529, São Paulo',
-        imageUrl: 'barberFour',
+        imageUrl: 'barber1.svg',
         barbers: [mockBarber],
       },
     ];
