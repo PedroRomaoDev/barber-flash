@@ -69,10 +69,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const getBarberImage = (imageUrl: unknown): ImageSourcePropType => {
     if (!imageUrl || typeof imageUrl !== 'string') return barbeariaImg;
     if (imageUrl.startsWith('http')) return { uri: imageUrl };
-    if (imageUrl === 'barber1.svg') return assets.barberOne;
-    if (imageUrl === 'barber2.svg') return assets.barberTwo;
-    if (imageUrl === 'barber3.svg') return assets.barberThree;
-    if (imageUrl === 'barberFour') return assets.barberFour; // keeping as fallback
+    if (imageUrl === 'barber1.svg' || imageUrl === 'barberOne') return assets.barberOne;
+    if (imageUrl === 'barber2.svg' || imageUrl === 'barberTwo') return assets.barberTwo;
+    if (imageUrl === 'barber3.svg' || imageUrl === 'barberThree') return assets.barberThree;
+    if (imageUrl === 'barberFour') return assets.barberFour;
     return barbeariaImg;
   };
 

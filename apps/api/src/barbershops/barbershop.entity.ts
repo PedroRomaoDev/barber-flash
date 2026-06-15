@@ -26,6 +26,9 @@ export class Barbershop {
     description: string | null;
 
     @Column({ type: 'text', nullable: true })
+    imageUrl: string | null;
+
+    @Column({ type: 'text', nullable: true })
     address: string | null;
 
     @ManyToOne(() => User, (user) => user.ownedBarbershops, {
