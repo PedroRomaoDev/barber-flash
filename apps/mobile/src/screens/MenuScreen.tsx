@@ -14,6 +14,8 @@ import {
   LoginRow,
   LoginDialog,
 } from './menu/components';
+import type { AuthSubmitData } from './menu/components/LoginDialog';
+import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 import { serviceItems } from './menu/data';
 import type { MenuItem } from './menu/data';
 
@@ -118,24 +120,32 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
   const dialogOpen = showLoginDialog || isLoginOpen || isLogoutConfirmOpen;
   const dimMenu = dimmed || dialogOpen;
 
-  const handleGoogleLogin = async () => {
+  const handleAuth = async (data: AuthSubmitData) => {
     setAuthError(null);
+    if (!data.email || !data.password) {
+      setAuthError('E-mail e senha são obrigatórios');
+      return;
+    }
+    if (data.mode === 'register' && !data.name) {
+      setAuthError('Nome é obrigatório para cadastro');
+      return;
+    }
+
     setIsLoggingIn(true);
     try {
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 800));
+      let res;
+      if (data.mode === 'login') {
+        res = await loginWithEmail(data.email, data.password);
+      } else {
+        res = await registerWithEmail(data.name!, data.email, data.password);
+      }
       
-      setUser({
-        id: '1',
-        name: 'Pedro Gonçalves',
-        email: 'pedrogoncalves@gmail.com',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-        role: 'USER',
-      });
-      setToken('mock-google-token');
+      setUser(res.user);
+      setToken(res.accessToken);
       setIsLoginOpen(false);
-      toast.show({ message: 'Login realizado com sucesso!', type: 'success' });
+      toast.show({ message: data.mode === 'login' ? 'Login realizado com sucesso!' : 'Cadastro realizado com sucesso!', type: 'success' });
     } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : 'Erro ao fazer login com Google';
+      const errorMsg = e instanceof Error ? e.message : 'Erro na autenticação';
       setAuthError(errorMsg);
       toast.show({ message: errorMsg, type: 'error' });
     } finally {
@@ -285,7 +295,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
               />
               {isLoginOpen && (
                 <LoginDialog
-                  onGooglePress={() => { void handleGoogleLogin(); }}
+                  onSubmit={(data) => { void handleAuth(data); }}
                   loading={isLoggingIn}
                   errorMessage={authError}
                 />
