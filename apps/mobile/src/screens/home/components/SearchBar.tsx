@@ -15,7 +15,7 @@ const SearchIcon: React.FC<{ color?: string }> = ({ color = "#838896" }) => (
   </View>
 );
 
-export const SearchBar: React.FC<{ value?: string, onChangeText?: (text: string) => void }> = ({ value, onChangeText }) => (
+export const SearchBar: React.FC<{ value?: string, onChangeText?: (text: string) => void, onSearch?: () => void }> = ({ value, onChangeText, onSearch }) => (
   <View style={styles.searchRow}>
     <View style={styles.searchInputWrapper}>
       <TextInput
@@ -24,9 +24,11 @@ export const SearchBar: React.FC<{ value?: string, onChangeText?: (text: string)
         style={styles.searchInput}
         value={value}
         onChangeText={onChangeText}
+        onSubmitEditing={onSearch}
+        returnKeyType="search"
       />
     </View>
-    <View style={styles.searchButton}>
+    <View style={styles.searchButton} onTouchEnd={onSearch}>
       <SearchIcon color="#FFF" />
     </View>
   </View>

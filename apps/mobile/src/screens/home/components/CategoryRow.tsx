@@ -6,9 +6,10 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 type CategoryRowProps = {
   categories: CategoryItem[];
+  onCategoryPress?: (label: string) => void;
 };
 
-export const CategoryRow: React.FC<CategoryRowProps> = ({ categories }) => (
+export const CategoryRow: React.FC<CategoryRowProps> = ({ categories, onCategoryPress }) => (
   <ScrollView
     horizontal
     showsHorizontalScrollIndicator={false}
@@ -25,14 +26,14 @@ export const CategoryRow: React.FC<CategoryRowProps> = ({ categories }) => (
       }
 
       return (
-        <View key={category.id} style={styles.categoryChip}>
+        <Pressable key={category.id} style={styles.categoryChip} onPress={() => onCategoryPress && onCategoryPress(category.label)}>
           {category.icon ? (
             <Image source={category.icon} style={styles.categoryIcon} />
           ) : (
             <MaterialCommunityIcons name={iconName} size={16} color="#FFF" />
           )}
           <Text style={styles.categoryText}>{category.label}</Text>
-        </View>
+        </Pressable>
       );
     })}
   </ScrollView>

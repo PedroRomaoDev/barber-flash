@@ -62,8 +62,8 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
 
   useFocusEffect(
     useCallback(() => {
-      void fetchBarbershops(searchQuery);
-    }, [searchQuery])
+      void fetchBarbershops('');
+    }, [])
   );
 
   const getBarberImage = (imageUrl: unknown): ImageSourcePropType => {
@@ -72,7 +72,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     if (imageUrl === 'barber1.svg' || imageUrl === 'barberOne') return assets.barberOne;
     if (imageUrl === 'barber2.svg' || imageUrl === 'barberTwo') return assets.barberTwo;
     if (imageUrl === 'barber3.svg' || imageUrl === 'barberThree') return assets.barberThree;
-    if (imageUrl === 'barberFour') return assets.barberFour;
+    if (imageUrl === 'barber4.svg' || imageUrl === 'barber.svg' || imageUrl === 'barberFour') return assets.barberFour;
     return barbeariaImg;
   };
 
@@ -105,8 +105,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           highlight={user ? `${user.name}!` : "Faça seu Login!"}
           subtitle="Sexta, 2 de Fevereiro"
         />
-        <SearchBar value={searchQuery} onChangeText={setSearchQuery} />
-        <CategoryRow categories={categories} />
+        <SearchBar 
+          value={searchQuery} 
+          onChangeText={setSearchQuery} 
+          onSearch={() => {
+            if (searchQuery.trim()) {
+              navigation.navigate('Search', { query: searchQuery.trim() });
+            }
+          }}
+        />
+        <CategoryRow 
+          categories={categories} 
+          onCategoryPress={(label) => navigation.navigate('Search', { query: label })}
+        />
         <Banner
           titleLines={['Agende', 'nos melhores']}
           subtitle="com Flash Barber"

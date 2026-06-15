@@ -126,7 +126,7 @@ export class BarbershopsService {
       {
         name: 'Homem Elegante',
         address: 'Rua Projetada, 529, São Paulo',
-        imageUrl: 'barber1.svg',
+        imageUrl: 'barber.svg',
         barbers: [mockBarber],
       },
     ];
