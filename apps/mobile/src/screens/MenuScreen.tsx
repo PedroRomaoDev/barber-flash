@@ -15,6 +15,7 @@ import {
   LoginDialog,
 } from './menu/components';
 import { serviceItems } from './menu/data';
+import type { MenuItem } from './menu/data';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -35,11 +36,12 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
   const [authError, setAuthError] = useState<string | null>(null);
-  const { user, setUser, setToken } = useAuth();
+  const { user, setUser, setToken, logout, token } = useAuth();
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const toast = useToast();
 
   const [ownedShopsCount, setOwnedShopsCount] = useState(0);
+  const [pendingCount, setPendingCount] = useState(0);
   const slideAnim = useRef(new Animated.Value(300)).current; // Start hidden
 
   useEffect(() => {
@@ -69,6 +71,23 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
           }
         };
         void fetchOwnedShops();
+
+        // Feature 4: badge de pendentes para barbeiros
+        const fetchPending = async () => {
+          try {
+            let host = 'localhost';
+            if (Constants.expoConfig?.hostUri) host = Constants.expoConfig.hostUri.split(':')[0];
+            else if (Platform.OS === 'android') host = '10.0.2.2';
+            const res = await fetch(`http://${host}:3000/bookings/barber-bookings`, {
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (res.ok) {
+              const data = (await res.json()) as Array<{ status: string }>;
+              setPendingCount(data.filter((b) => b.status === 'PENDING').length);
+            }
+          } catch { /* silent */ }
+        };
+        void fetchPending();
       }
     }
   }, [visible, user]);
@@ -130,9 +149,9 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
 
   const confirmLogout = () => {
     setIsLogoutConfirmOpen(false);
-    setUser(null);
-    setToken(null);
+    logout();
     setOwnedShopsCount(0);
+    setPendingCount(0);
     toast.show({ message: 'Logout realizado com sucesso!', type: 'info' });
   };
 
@@ -141,7 +160,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
 
   // Extend menu items dynamically based on auth
   const dynamicPrimaryItems = useMemo(() => {
-    const items = [
+    const items: MenuItem[] = [
       { id: 'home', label: 'Início', icon: 'home', active: currentRouteName === 'Home' },
       { id: 'my-appointments', label: 'Agendamentos', icon: 'calendar', active: currentRouteName === 'MyAppointments' },
     ];
@@ -152,10 +171,12 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
         items.push({ id: 'register-service', label: 'Cadastrar Serviço', icon: 'scissors', active: currentRouteName === 'RegisterService' });
       }
       items.push({ id: 'register-barber', label: 'Cadastrar Barbeiro', icon: 'user-plus', active: currentRouteName === 'RegisterBarber' });
+      items.push({ id: 'barber-appointments', label: 'Pedidos', icon: 'bell', active: currentRouteName === 'BarberAppointments', badge: pendingCount > 0 ? pendingCount : undefined });
+      items.push({ id: 'profile', label: 'Meu Perfil', icon: 'user', active: currentRouteName === 'Profile' });
     }
 
     return items;
-  }, [user, ownedShopsCount, currentRouteName]);
+  }, [user, ownedShopsCount, pendingCount, currentRouteName]);
 
   const handleAction = (id: string) => {
     onClose();
@@ -177,6 +198,12 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
       } else {
         navigation.navigate('MyAppointments');
       }
+    }
+    if (id === 'barber-appointments') {
+      navigation.navigate('BarberAppointments');
+    }
+    if (id === 'profile') {
+      navigation.navigate('Profile');
     }
   };
 

@@ -3,6 +3,7 @@ export type MenuItem = {
   label: string;
   icon: string | number;
   active?: boolean;
+  badge?: number;
 };
 
 export const primaryItems: MenuItem[] = [

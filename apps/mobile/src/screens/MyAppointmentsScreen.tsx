@@ -22,52 +22,67 @@ interface BookingItem {
 }
 
 export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
-  const { token } = useAuth();
+  const { token: authToken } = useAuth();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
-  useEffect(() => {
-    const fetchBookings = async () => {
-      try {
-        let host = 'localhost';
-        if (Constants.expoConfig?.hostUri) {
-          host = Constants.expoConfig.hostUri.split(':')[0];
-        } else if (Platform.OS === 'android') {
-          host = '10.0.2.2';
-        }
+  const getHost = () => {
+    let host = 'localhost';
+    if (Constants.expoConfig?.hostUri) host = Constants.expoConfig.hostUri.split(':')[0];
+    else if (Platform.OS === 'android') host = '10.0.2.2';
+    return host;
+  };
 
-        const response = await fetch(`http://${host}:3000/bookings/my-bookings`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-
-        if (response.ok) {
-          const data = (await response.json()) as BookingItem[];
-          setBookings(data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch bookings', error);
-        toast.show({ message: 'Erro ao carregar agendamentos.', type: 'error' });
-      } finally {
-        setLoading(false);
+  const fetchBookings = async () => {
+    try {
+      const response = await fetch(`http://${getHost()}:3000/bookings/my-bookings`, {
+        headers: { 'Authorization': `Bearer ${authToken}` }
+      });
+      if (response.ok) {
+        const data = (await response.json()) as BookingItem[];
+        setBookings(data);
       }
-    };
-    if (token) {
-      void fetchBookings();
-    } else {
+    } catch (error) {
+      console.error('Failed to fetch bookings', error);
+      toast.show({ message: 'Erro ao carregar agendamentos.', type: 'error' });
+    } finally {
       setLoading(false);
     }
-  }, [token]);
+  };
+
+  useEffect(() => {
+    if (authToken) void fetchBookings();
+    else setLoading(false);
+  }, [authToken]);
+
+  const handleCancel = async (id: string) => {
+    try {
+      const res = await fetch(`http://${getHost()}:3000/bookings/${id}/cancel`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${authToken}` },
+      });
+      if (res.ok) {
+        toast.show({ message: 'Agendamento cancelado com sucesso.', type: 'success' });
+        void fetchBookings();
+      } else {
+        toast.show({ message: 'Não foi possível cancelar.', type: 'error' });
+      }
+    } catch (e) {
+      console.error(e);
+      toast.show({ message: 'Erro ao cancelar agendamento.', type: 'error' });
+    }
+  };
 
   const renderItem = ({ item }: { item: BookingItem }) => {
     const date = new Date(item.scheduledAt);
+    const isPending = item.status === 'PENDING';
+    const statusColor = item.status === 'CONFIRMED' ? '#00D084' : item.status === 'CANCELLED' ? '#FF4E4E' : '#8162FF';
     return (
       <View style={styles.card}>
         <View style={styles.cardHeader}>
           <Text style={styles.shopName}>{item.barbershop?.name || 'Barbearia'}</Text>
-          <Text style={styles.status}>{item.status}</Text>
+          <Text style={[styles.status, { color: statusColor }]}>{item.status}</Text>
         </View>
         <Text style={styles.serviceName}>{item.service?.name}</Text>
         <Text style={styles.dateText}>{date.toLocaleDateString()} às {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</Text>
@@ -75,6 +90,12 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
           <Text style={styles.price}>R$ {item.priceSnapshot}</Text>
           <Text style={styles.barber}>Com {item.barber?.user?.name || 'Barbeiro'}</Text>
         </View>
+        {isPending && (
+          <Pressable style={styles.cancelButton} onPress={() => { void handleCancel(item.id); }}>
+            <Feather name="x-circle" size={14} color="#FF4E4E" />
+            <Text style={styles.cancelText}>Cancelar agendamento</Text>
+          </Pressable>
+        )}
       </View>
     );
   };
@@ -124,5 +145,7 @@ const styles = StyleSheet.create({
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', borderTopWidth: 1, borderTopColor: '#26272B', paddingTop: 16 },
   price: { color: '#8162FF', fontSize: 16, fontWeight: 'bold' },
   barber: { color: '#838896', fontSize: 14 },
-  emptyText: { color: '#838896', textAlign: 'center', marginTop: 40 }
+  emptyText: { color: '#838896', textAlign: 'center', marginTop: 40 },
+  cancelButton: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 12, paddingTop: 12, borderTopWidth: 1, borderTopColor: '#3A2A2A' },
+  cancelText: { color: '#FF4E4E', fontSize: 13, fontWeight: 'bold' },
 });

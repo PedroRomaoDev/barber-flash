@@ -21,6 +21,50 @@ export class BookingsService {
     });
   }
 
+  findOneById(id: string): Promise<Booking | null> {
+    return this.bookingRepository.findOne({
+      where: { id },
+      relations: ['client'],
+    });
+  }
+
+  async getBookedSlots(barberId: string, dateStr: string): Promise<{ bookedSlots: string[] }> {
+    const date = new Date(dateStr);
+    const startOfDay = new Date(date);
+    startOfDay.setUTCHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setUTCHours(23, 59, 59, 999);
+
+    const bookings = await this.bookingRepository
+      .createQueryBuilder('b')
+      .leftJoinAndSelect('b.service', 'service')
+      .innerJoin('b.barber', 'barber', 'barber.id = :barberId', { barberId })
+      .andWhere('b.scheduledAt >= :start', { start: startOfDay })
+      .andWhere('b.scheduledAt <= :end', { end: endOfDay })
+      .andWhere('b.status != :cancelled', { cancelled: BookingStatus.CANCELLED })
+      .getMany();
+
+    const bookedSlots: string[] = [];
+    const ALL_SLOTS = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+
+    for (const slot of ALL_SLOTS) {
+      const [h, m] = slot.split(':').map(Number);
+      const slotStart = new Date(date);
+      slotStart.setUTCHours(h, m, 0, 0);
+      const slotEnd = new Date(slotStart.getTime() + 60 * 60000); // assume 60min per slot
+
+      const conflict = bookings.some((b) => {
+        const bStart = new Date(b.scheduledAt);
+        const bEnd = new Date(bStart.getTime() + (b.service?.durationMinutes ?? 60) * 60000);
+        return slotStart < bEnd && slotEnd > bStart;
+      });
+
+      if (conflict) bookedSlots.push(slot);
+    }
+
+    return { bookedSlots };
+  }
+
   async createBooking(
     userId: string,
     barberId: string,

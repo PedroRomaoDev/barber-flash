@@ -1,11 +1,10 @@
+ 
 import { Injectable, HttpException } from '@nestjs/common';
-const Stripe = require('stripe');
+import Stripe from 'stripe';
 
 @Injectable()
 export class PaymentsService {
-  private stripe = new Stripe(process.env.STRIPE_SECRET_KEY, {
-    apiVersion: '2026-05-27.dahlia' as any,
-  });
+  private stripe = new Stripe(process.env.STRIPE_SECRET_KEY ?? '');
 
   async createPaymentIntent(amount: number) {
     try {
@@ -20,9 +19,10 @@ export class PaymentsService {
       return {
         clientSecret: paymentIntent.client_secret,
       };
-    } catch (error: any) {
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Erro desconhecido';
       console.error('Stripe API Error:', error);
-      throw new HttpException(`Erro na Stripe: ${error.message}`, 400);
+      throw new HttpException(`Erro na Stripe: ${message}`, 400);
     }
   }
 }

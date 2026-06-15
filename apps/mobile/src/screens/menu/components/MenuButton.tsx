@@ -43,7 +43,25 @@ export const MenuButton: React.FC<MenuButtonProps> = ({ item, onPress }) => {
   return (
     <Pressable onPress={onPress}>
       <View style={[styles.menuButton, item.active && styles.menuButtonActive]}>
-        {renderIcon()}
+        <View style={{ position: 'relative' }}>
+          {renderIcon()}
+          {!!item.badge && (
+            <View style={{
+              position: 'absolute',
+              top: -6,
+              right: -8,
+              backgroundColor: '#FF4E4E',
+              borderRadius: 10,
+              minWidth: 18,
+              height: 18,
+              justifyContent: 'center',
+              alignItems: 'center',
+              paddingHorizontal: 4,
+            }}>
+              <Text style={{ color: '#FFF', fontSize: 10, fontWeight: 'bold' }}>{item.badge}</Text>
+            </View>
+          )}
+        </View>
         <Text style={[styles.menuLabel, { color: textColor }]}>{item.label}</Text>
       </View>
     </Pressable>

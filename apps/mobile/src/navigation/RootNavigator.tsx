@@ -8,6 +8,7 @@ import { RegisterBarberScreen } from '../screens/RegisterBarberScreen';
 import { MyAppointmentsScreen } from '../screens/MyAppointmentsScreen';
 import { RegisterServiceScreen } from '../screens/RegisterServiceScreen';
 import { BarberAppointmentsScreen } from '../screens/BarberAppointmentsScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -18,6 +19,7 @@ export type RootStackParamList = {
   MyAppointments: undefined;
   RegisterService: undefined;
   BarberAppointments: undefined;
+  Profile: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -33,6 +35,7 @@ export const RootNavigator = () => {
       <Stack.Screen name="MyAppointments" component={MyAppointmentsScreen} />
       <Stack.Screen name="RegisterService" component={RegisterServiceScreen} />
       <Stack.Screen name="BarberAppointments" component={BarberAppointmentsScreen} />
+      <Stack.Screen name="Profile" component={ProfileScreen} />
     </Stack.Navigator>
   );
 };

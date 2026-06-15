@@ -39,8 +39,9 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
   const [loading, setLoading] = useState(true);
   const [selectedBarberId, setSelectedBarberId] = useState<string | null>(null);
 
-  // Hardcoded times for prototype
-  const availableTimes = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+  const ALL_TIMES = ['09:00', '10:00', '11:00', '14:00', '15:00', '16:00'];
+  const [bookedSlots, setBookedSlots] = useState<string[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedTime, setSelectedTime] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [modal, setModal] = useState<{ visible: boolean, type: 'success' | 'error', title: string, message: string }>({ visible: false, type: 'success', title: '', message: '' });
@@ -72,6 +73,40 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
     };
     void fetchDetails();
   }, [barbershopId]);
+
+  // Fetch booked slots whenever barbeiro ou data muda
+  useEffect(() => {
+    if (!selectedBarberId) {
+      setBookedSlots([]);
+      return;
+    }
+    const fetchSlots = async () => {
+      setLoadingSlots(true);
+      try {
+        let host = 'localhost';
+        if (Constants.expoConfig?.hostUri) {
+          host = Constants.expoConfig.hostUri.split(':')[0];
+        } else if (Platform.OS === 'android') {
+          host = '10.0.2.2';
+        }
+        const dateStr = selectedDate.toISOString().split('T')[0];
+        const res = await fetch(`http://${host}:3000/bookings/availability?barberId=${selectedBarberId}&date=${dateStr}`);
+        if (res.ok) {
+          const data = (await res.json()) as { bookedSlots: string[] };
+          setBookedSlots(data.bookedSlots);
+          // Desseleciona se o horário atual ficou bloqueado
+          if (selectedTime && data.bookedSlots.includes(selectedTime)) {
+            setSelectedTime(null);
+          }
+        }
+      } catch (e) {
+        console.error('Failed to fetch availability', e);
+      } finally {
+        setLoadingSlots(false);
+      }
+    };
+    void fetchSlots();
+  }, [selectedBarberId, selectedDate]);
 
   const { initPaymentSheet, presentPaymentSheet } = useStripe();
   const toast = useToast();
@@ -277,17 +312,40 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         </ScrollView>
 
         <Text style={styles.sectionTitle}>Selecione o Horário</Text>
-        <View style={styles.timeGrid}>
-          {availableTimes.map((time) => (
-            <Pressable
-              key={time}
-              style={[styles.timeChip, selectedTime === time && styles.timeChipActive]}
-              onPress={() => setSelectedTime(time)}
-            >
-              <Text style={[styles.timeText, selectedTime === time && styles.timeTextActive]}>{time}</Text>
-            </Pressable>
-          ))}
-        </View>
+        {loadingSlots ? (
+          <ActivityIndicator color="#8162FF" style={{ marginVertical: 16 }} />
+        ) : (
+          <View style={styles.timeGrid}>
+            {ALL_TIMES.map((time) => {
+              const isBooked = bookedSlots.includes(time);
+              const isSelected = selectedTime === time;
+              return (
+                <Pressable
+                  key={time}
+                  style={[
+                    styles.timeChip,
+                    isSelected && styles.timeChipActive,
+                    isBooked && styles.timeChipBooked,
+                  ]}
+                  onPress={() => {
+                    if (isBooked) {
+                      toast.show({ message: 'Horário já ocupado, escolha outro.', type: 'error' });
+                      return;
+                    }
+                    setSelectedTime(time);
+                  }}
+                >
+                  <Text style={[
+                    styles.timeText,
+                    isSelected && styles.timeTextActive,
+                    isBooked && styles.timeTextBooked,
+                  ]}>{time}</Text>
+                  {isBooked && <Text style={styles.bookedLabel}>Ocupado</Text>}
+                </Pressable>
+              );
+            })}
+          </View>
+        )}
 
       </ScrollView>
 
@@ -329,10 +387,13 @@ const styles = StyleSheet.create({
   dateDayText: { color: '#838896', fontSize: 18, fontWeight: 'bold' },
   dateTextActive: { color: '#FFF' },
   timeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginBottom: 40 },
-  timeChip: { paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#1A1B1F', borderRadius: 8, borderWidth: 1, borderColor: '#26272B' },
+  timeChip: { paddingVertical: 12, paddingHorizontal: 24, backgroundColor: '#1A1B1F', borderRadius: 8, borderWidth: 1, borderColor: '#26272B', alignItems: 'center' },
   timeChipActive: { backgroundColor: '#8162FF', borderColor: '#8162FF' },
+  timeChipBooked: { backgroundColor: '#1A1B1F', borderColor: '#3A2A2A', opacity: 0.5 },
   timeText: { color: '#838896', fontWeight: 'bold' },
   timeTextActive: { color: '#FFF' },
+  timeTextBooked: { color: '#5A3535', textDecorationLine: 'line-through' },
+  bookedLabel: { color: '#FF4E4E', fontSize: 9, marginTop: 2, fontWeight: 'bold' },
   footer: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: 20, backgroundColor: '#1A1B1F', borderTopWidth: 1, borderTopColor: '#26272B' },
   totalLabel: { color: '#838896', fontSize: 12 },
   totalPrice: { color: '#FFF', fontSize: 20, fontWeight: 'bold' },

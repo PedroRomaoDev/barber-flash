@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, ILike } from 'typeorm';
+import { Repository, ILike, FindOptionsWhere, DeepPartial } from 'typeorm';
 import { Barbershop } from './barbershop.entity';
 import { Service } from '../services/service.entity';
 import { BarberProfile } from '../barbers/barber-profile.entity';
@@ -18,7 +18,7 @@ export class BarbershopsService {
   ) {}
 
   findAll(search?: string, ownerId?: string): Promise<Barbershop[]> {
-    const whereClause: any = {};
+    const whereClause: FindOptionsWhere<Barbershop> = {};
     if (search) {
       whereClause.name = ILike(`%${search}%`);
     }
@@ -46,7 +46,7 @@ export class BarbershopsService {
     return barbershop;
   }
 
-  async create(data: Partial<Barbershop>): Promise<Barbershop> {
+  async create(data: DeepPartial<Barbershop>): Promise<Barbershop> {
     const barbershop = this.barbershopRepository.create(data);
     return this.barbershopRepository.save(barbershop);
   }

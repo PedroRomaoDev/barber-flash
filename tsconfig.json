@@ -10,6 +10,7 @@
     "ignoreDeprecations": "5.0",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "paths": {
       "@barber/api/*": ["./apps/api/*"],
       "@barber/mobile/*": ["./apps/mobile/*"]
