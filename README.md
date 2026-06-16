@@ -2,6 +2,12 @@
 
 Projeto fullstack (Monorepo) para o aplicativo de agendamentos **Flash Barber**. O repositório contém a API em NestJS (`apps/api`) e o aplicativo Mobile em React Native/Expo (`apps/mobile`).
 
+> [!IMPORTANT]
+> **Branch Principal:** Certifique-se de estar na branch `16-06` para rodar a versão mais atualizada deste projeto.
+> ```bash
+> git checkout 16-06
+> ```
+
 ---
 
 ## 🚀 Como Rodar o Projeto
