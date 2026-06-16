@@ -8,6 +8,7 @@ interface CreateBarbershopBody {
   name: string;
   address?: string;
   imageUrl?: string;
+  phone?: string;
   ownerId?: string;
   owner?: Partial<User>;
 }

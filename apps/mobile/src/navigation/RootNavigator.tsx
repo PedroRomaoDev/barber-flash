@@ -10,6 +10,7 @@ import { RegisterServiceScreen } from '../screens/RegisterServiceScreen';
 import { BarberAppointmentsScreen } from '../screens/BarberAppointmentsScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { SearchScreen } from '../screens/SearchScreen';
+import { AppointmentDetailsScreen } from '../screens/AppointmentDetailsScreen';
 
 export type RootStackParamList = {
   Home: undefined;
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   BarberAppointments: undefined;
   Profile: undefined;
   Search: { query: string };
+  AppointmentDetails: { booking: Record<string, unknown> };
 };
 
 declare global {
@@ -56,6 +58,7 @@ export const RootNavigator = () => {
       />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
+      <Stack.Screen name="AppointmentDetails" component={AppointmentDetailsScreen} options={{ presentation: 'modal' }} />
     </Stack.Navigator>
   );
 };

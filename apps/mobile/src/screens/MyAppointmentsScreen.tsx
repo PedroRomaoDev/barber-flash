@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, Text, StyleSheet, FlatList, ActivityIndicator, Pressable, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -25,7 +26,7 @@ interface BookingItem {
   barber?: { user?: { name?: string } };
 }
 
-export const MyAppointmentsScreen: React.FC<Props> = () => {
+export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
   const { token: authToken } = useAuth();
   const [bookings, setBookings] = useState<BookingItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -66,43 +67,22 @@ export const MyAppointmentsScreen: React.FC<Props> = () => {
     }
   };
 
-  useEffect(() => {
-    if (authToken) void fetchBookings();
-    else setLoading(false);
-  }, [authToken]);
-
-  const handleCancel = async (id: string) => {
-    try {
-      const res = await fetch(`http://${getHost()}:3000/bookings/${id}/cancel`, {
-        method: 'POST',
-        headers: { 'Authorization': `Bearer ${authToken}` },
-      });
-      if (res.ok) {
-        toast.show({ message: 'Agendamento cancelado com sucesso.', type: 'success' });
-        void fetchBookings();
-      } else {
-        toast.show({ message: 'Não foi possível cancelar.', type: 'error' });
-      }
-    } catch (e) {
-      console.error(e);
-      toast.show({ message: 'Erro ao cancelar agendamento.', type: 'error' });
-    }
-  };
+  useFocusEffect(
+    useCallback(() => {
+      if (authToken) void fetchBookings();
+      else setLoading(false);
+    }, [authToken])
+  );
 
   const confirmedBookings = bookings.filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED');
   const pastBookings = bookings.filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED');
 
-  const getMonthName = (date: Date) => {
-    const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-    return months[date.getMonth()];
-  };
-
   const renderBookingCard = (item: BookingItem, isConfirmed: boolean) => {
-    const date = new Date(item.scheduledAt);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = getMonthName(date);
-    const time = date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    
+    const bookingDate = new Date(item.scheduledAt);
+    const month = bookingDate.toLocaleDateString('pt-BR', { month: 'long' });
+    const day = bookingDate.getDate().toString().padStart(2, '0');
+    const time = bookingDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
     const badgeText = isConfirmed ? 'Confirmado' : 'Finalizado';
     const badgeStyle = isConfirmed ? styles.badgeConfirmed : styles.badgeFinalizado;
     const badgeTextStyle = isConfirmed ? styles.badgeTextConfirmed : styles.badgeTextFinalizado;
@@ -110,7 +90,11 @@ export const MyAppointmentsScreen: React.FC<Props> = () => {
     const avatarSource = getBarberImage(item.barbershop?.imageUrl);
 
     return (
-      <View key={item.id} style={styles.cardContainer}>
+      <Pressable 
+        key={item.id} 
+        style={styles.cardContainer}
+        onPress={() => navigation.navigate('AppointmentDetails', { booking: item as unknown as Record<string, unknown> })}
+      >
         <View style={styles.cardLeft}>
           <View style={[styles.badge, badgeStyle]}>
             <Text style={[styles.badgeText, badgeTextStyle]}>{badgeText}</Text>
@@ -130,12 +114,8 @@ export const MyAppointmentsScreen: React.FC<Props> = () => {
           <Text style={styles.dateTime}>{time}</Text>
         </View>
         
-        {item.status === 'PENDING' && (
-          <Pressable style={styles.cancelBtn} onPress={() => { void handleCancel(item.id); }}>
-            <Text style={styles.cancelBtnText}>Cancelar Agendamento</Text>
-          </Pressable>
-        )}
-      </View>
+        {/* Remover botão cancelar antigo, pois agora fica na nova tela */}
+      </Pressable>
     );
   };
 

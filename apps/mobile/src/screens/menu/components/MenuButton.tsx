@@ -20,9 +20,6 @@ export const MenuButton: React.FC<MenuButtonProps> = ({ item, onPress }) => {
     'eye-outline',
     'spa',
     'water',
-    'briefcase',
-    'user-plus',
-    'scissors'
   ];
 
   const renderIcon = () => {

@@ -31,6 +31,9 @@ export class Barbershop {
     @Column({ type: 'text', nullable: true })
     address: string | null;
 
+    @Column({ type: 'varchar', length: 20, nullable: true })
+    phone: string | null;
+
     @ManyToOne(() => User, (user) => user.ownedBarbershops, {
         onDelete: 'SET NULL',
         nullable: true,
