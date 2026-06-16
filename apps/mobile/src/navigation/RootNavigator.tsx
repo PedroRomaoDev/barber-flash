@@ -24,19 +24,36 @@ export type RootStackParamList = {
   Search: { query: string };
 };
 
+declare global {
+  // eslint-disable-next-line @typescript-eslint/no-namespace
+  namespace ReactNavigation {
+    // eslint-disable-next-line @typescript-eslint/no-empty-object-type
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Home" component={HomeScreen} />
-      <Stack.Screen name="BarbershopDetails" component={BarbershopDetailsScreen} />
+      <Stack.Screen
+        name="BarbershopDetails"
+        component={BarbershopDetailsScreen}
+      />
       <Stack.Screen name="Booking" component={BookingScreen} />
-      <Stack.Screen name="RegisterBarbershop" component={RegisterBarbershopScreen} />
+      <Stack.Screen
+        name="RegisterBarbershop"
+        component={RegisterBarbershopScreen}
+      />
       <Stack.Screen name="RegisterBarber" component={RegisterBarberScreen} />
       <Stack.Screen name="MyAppointments" component={MyAppointmentsScreen} />
       <Stack.Screen name="RegisterService" component={RegisterServiceScreen} />
-      <Stack.Screen name="BarberAppointments" component={BarberAppointmentsScreen} />
+      <Stack.Screen
+        name="BarberAppointments"
+        component={BarberAppointmentsScreen}
+      />
       <Stack.Screen name="Profile" component={ProfileScreen} />
       <Stack.Screen name="Search" component={SearchScreen} />
     </Stack.Navigator>

@@ -11,12 +11,14 @@ type BarberCardProps = {
   name: string;
   address: string;
   image: ImageSourcePropType;
+  onReservePress?: () => void;
 };
 
 export const BarberCard: React.FC<BarberCardProps> = ({
   name,
   address,
   image,
+  onReservePress,
 }) => (
   <View style={styles.barberCard}>
     <View style={styles.barberImageWrapper}>
@@ -45,7 +47,11 @@ export const BarberCard: React.FC<BarberCardProps> = ({
           {address}
         </Text>
       </View>
-      <TouchableOpacity style={styles.reserveButton} activeOpacity={0.7}>
+      <TouchableOpacity 
+        style={styles.reserveButton} 
+        activeOpacity={0.7}
+        onPress={onReservePress}
+      >
         <Text style={styles.reserveButtonText}>Reservar</Text>
       </TouchableOpacity>
     </View>

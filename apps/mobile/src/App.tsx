@@ -8,6 +8,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { StripeProvider } from './utils/stripe';
 
 import { ToastProvider } from './contexts/ToastContext';
+import Toast from 'react-native-toast-message';
 
 import NunitoFont from '../assets/fonts/Nunito-Variable.ttf';
 
@@ -29,6 +30,7 @@ export default function App() {
    
   const stripeKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
+
   return (
     <SafeAreaProvider>
       <StripeProvider publishableKey={stripeKey}>
@@ -37,6 +39,7 @@ export default function App() {
             <NavigationContainer>
               <RootNavigator />
             </NavigationContainer>
+            <Toast />
           </ToastProvider>
         </AuthProvider>
       </StripeProvider>

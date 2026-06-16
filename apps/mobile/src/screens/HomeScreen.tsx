@@ -22,6 +22,7 @@ import {
 } from './home/components';
 import { MenuScreen } from './MenuScreen';
 import { useAuth } from '../contexts/AuthContext';
+import Toast from 'react-native-toast-message';
 
 type HomeScreenProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
 
@@ -32,6 +33,19 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const { user } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
+
+  const handleReservePress = (barbershopId: string) => {
+    if (!user) {
+      Toast.show({
+        type: 'error',
+        text1: 'Faça seu login',
+        text2: 'Você precisa estar logado para reservar.',
+        position: 'bottom',
+      });
+    } else {
+      navigation.navigate('BarbershopDetails', { id: barbershopId });
+    }
+  };
 
   // mock active schedules for now based on user auth, 
   // until we implement real bookings. The user requested to hide if none exists.
@@ -150,6 +164,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     name={item.name}
                     address={item.address}
                     image={getBarberImage(item.imageUrl)}
+                    onReservePress={() => handleReservePress(item.id)}
                   />
                 </Pressable>
               ))
@@ -171,6 +186,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
                     name={item.name}
                     address={item.address}
                     image={getBarberImage(item.imageUrl)}
+                    onReservePress={() => handleReservePress(item.id)}
                   />
                 </Pressable>
               ))

@@ -12,6 +12,7 @@ import barbeariaImg from '../../assets/images/barbearia.png';
 import { MenuScreen } from './MenuScreen';
 import { useAuth } from '../contexts/AuthContext';
 import { ImageSourcePropType } from 'react-native';
+import Toast from 'react-native-toast-message';
 
 type SearchScreenProps = NativeStackScreenProps<RootStackParamList, 'Search'>;
 
@@ -22,6 +23,19 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ route, navigation })
   const [results, setResults] = useState<BarberItem[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
+
+  const handleReservePress = (barbershopId: string) => {
+    if (!user) {
+      Toast.show({
+        type: 'error',
+        text1: 'Faça seu login',
+        text2: 'Você precisa estar logado para reservar.',
+        position: 'bottom',
+      });
+    } else {
+      navigation.navigate('BarbershopDetails', { id: barbershopId });
+    }
+  };
 
   const fetchResults = async (q: string) => {
     try {
@@ -65,11 +79,12 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ route, navigation })
   };
 
   const renderItem = ({ item }: { item: BarberItem }) => (
-    <Pressable style={{ flex: 1, margin: 8, maxWidth: '50%' }} onPress={() => navigation.navigate('BarbershopDetails', { id: item.id })}>
+    <Pressable onPress={() => navigation.navigate('BarbershopDetails', { id: item.id })}>
       <BarberCard
         name={item.name}
         address={item.address}
         image={getBarberImage(item.imageUrl)}
+        onReservePress={() => handleReservePress(item.id)}
       />
     </Pressable>
   );
@@ -82,7 +97,7 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ route, navigation })
         onBellPress={() => navigation.navigate('BarberAppointments')} 
       />
       
-      <View style={{ paddingHorizontal: 20, paddingTop: 20 }}>
+      <View style={{ paddingTop: 24, paddingBottom: 24 }}>
         <SearchBar 
           value={searchQuery} 
           onChangeText={setSearchQuery} 
@@ -90,8 +105,8 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ route, navigation })
         />
       </View>
 
-      <View style={[styles.section, { flex: 1, marginTop: 24 }]}>
-        <Text style={{ fontFamily: 'Nunito_700Bold', fontSize: 14, color: '#838896', marginBottom: 12, marginLeft: 20, textTransform: 'uppercase' }}>
+      <View style={{ flex: 1 }}>
+        <Text style={{ fontFamily: 'Nunito_700Bold', fontSize: 12, color: '#838896', marginBottom: 24, marginLeft: 20, textTransform: 'uppercase' }}>
           RESULTADOS PARA "{searchQuery}"
         </Text>
         
@@ -103,7 +118,8 @@ export const SearchScreen: React.FC<SearchScreenProps> = ({ route, navigation })
             keyExtractor={(item) => item.id}
             numColumns={2}
             renderItem={renderItem}
-            contentContainerStyle={{ paddingHorizontal: 12, paddingBottom: 20 }}
+            columnWrapperStyle={{ justifyContent: 'center', gap: 0 }}
+            contentContainerStyle={{ paddingBottom: 24 }}
             ListEmptyComponent={
               <Text style={{ color: '#838896', textAlign: 'center', marginTop: 40 }}>
                 Nenhuma barbearia encontrada.

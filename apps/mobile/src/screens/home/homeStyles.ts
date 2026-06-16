@@ -123,6 +123,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Nunito_400Regular',
     paddingVertical: 0,
+    outlineStyle: 'none',
   },
   searchButton: {
     width: 36,

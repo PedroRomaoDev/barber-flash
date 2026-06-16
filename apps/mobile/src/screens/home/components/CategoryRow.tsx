@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Image, Text } from 'react-native';
+import { ScrollView, Image, Text, Pressable } from 'react-native';
 import { styles } from '../homeStyles';
 import type { CategoryItem } from '../data';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
