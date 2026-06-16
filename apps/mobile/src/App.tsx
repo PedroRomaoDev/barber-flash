@@ -8,12 +8,48 @@ import { AuthProvider } from './contexts/AuthContext';
 import { StripeProvider } from './utils/stripe';
 
 import { ToastProvider } from './contexts/ToastContext';
-import Toast from 'react-native-toast-message';
+import Toast, { BaseToast, ErrorToast, ToastConfig } from 'react-native-toast-message';
 
 import NunitoFont from '../assets/fonts/Nunito-Variable.ttf';
 
+const toastConfig: ToastConfig = {
+  success: (props) => (
+    <BaseToast
+      {...props}
+      style={{ borderLeftColor: '#8162FF', backgroundColor: '#1A1B1F', borderColor: '#26272B', borderWidth: 1 }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 16,
+        fontFamily: 'Nunito_700Bold',
+        color: '#FFFFFF'
+      }}
+      text2Style={{
+        fontSize: 14,
+        fontFamily: 'Nunito_400Regular',
+        color: '#838896'
+      }}
+    />
+  ),
+  error: (props) => (
+    <ErrorToast
+      {...props}
+      style={{ borderLeftColor: '#EF4444', backgroundColor: '#1A1B1F', borderColor: '#26272B', borderWidth: 1 }}
+      contentContainerStyle={{ paddingHorizontal: 15 }}
+      text1Style={{
+        fontSize: 16,
+        fontFamily: 'Nunito_700Bold',
+        color: '#FFFFFF'
+      }}
+      text2Style={{
+        fontSize: 14,
+        fontFamily: 'Nunito_400Regular',
+        color: '#838896'
+      }}
+    />
+  ),
+};
+
 export default function App() {
-   
   const [fontsLoaded] = useFonts({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
     Nunito_300Light: NunitoFont,
@@ -27,9 +63,7 @@ export default function App() {
     return <View />;
   }
 
-   
   const stripeKey = process.env.EXPO_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-
 
   return (
     <SafeAreaProvider>
@@ -39,7 +73,7 @@ export default function App() {
             <NavigationContainer>
               <RootNavigator />
             </NavigationContainer>
-            <Toast />
+            <Toast config={toastConfig} />
           </ToastProvider>
         </AuthProvider>
       </StripeProvider>
