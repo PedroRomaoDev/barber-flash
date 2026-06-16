@@ -63,7 +63,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         if (response.ok) {
           const data = (await response.json()) as Barbershop;
           if (!data.barbers || data.barbers.length === 0) {
-            data.barbers = [{ id: 'mock-1', user: { name: 'João Barbeiro (Mock)' } }];
+            data.barbers = [{ id: '00000000-0000-0000-0000-000000000000', user: { name: 'João Barbeiro (Mock)' } }];
           }
           setBarbershop(data);
           setSelectedBarberId(data.barbers[0].id);
