@@ -1,8 +1,8 @@
 import bannerBackgroundImg from '../../../assets/images/banner_illustration.svg';
-import barberOneImg from '../../../assets/images/barber1.svg';
-import barberTwoImg from '../../../assets/images/barber2.svg';
-import barberThreeImg from '../../../assets/images/barber3.svg';
-import barberFourImg from '../../../assets/images/barber.svg';
+import barberOneImg from '../../../assets/images/barber_one.png';
+import barberTwoImg from '../../../assets/images/barber_two.png';
+import barberThreeImg from '../../../assets/images/barber_three.png';
+import barberFourImg from '../../../assets/images/barber_four.png';
 
 export const assets = {
   scissor: null,

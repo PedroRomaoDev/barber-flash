@@ -37,7 +37,8 @@
           "merchantIdentifier": "merchant.com.barberflash",
           "enableGooglePay": false
         }
-      ]
+      ],
+      "expo-font"
     ]
   }
 }

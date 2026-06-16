@@ -387,7 +387,7 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
 
       <View style={styles.footer}>
         <Pressable style={styles.confirmButton} onPress={() => { void handleOpenPayment(); }}>
-          <Text style={styles.confirmButtonText}>Confirmar</Text>
+          <Text style={styles.confirmButtonText}>Pagar</Text>
         </Pressable>
       </View>
 

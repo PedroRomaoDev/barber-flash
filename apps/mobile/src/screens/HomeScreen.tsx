@@ -7,7 +7,17 @@ import { useFocusEffect } from '@react-navigation/native';
 import Constants from 'expo-constants';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import { assets } from './home/assets';
-import { categories, BarberItem, mockSchedule } from './home/data';
+import { categories, BarberItem } from './home/data';
+
+interface BookingItem {
+  id: string;
+  status: string;
+  scheduledAt: string | number | Date;
+  priceSnapshot: string | number;
+  barbershop?: { name?: string; imageUrl?: string };
+  service?: { name?: string };
+  barber?: { user?: { name?: string } };
+}
 import { styles } from './home/homeStyles';
 import {
   Banner,
@@ -30,7 +40,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [barbershops, setBarbershops] = useState<BarberItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const { user } = useAuth();
+  const { user, token } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -47,9 +57,28 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
     }
   };
 
-  // mock active schedules for now based on user auth, 
-  // until we implement real bookings. The user requested to hide if none exists.
-  const userBookings = user ? [] : []; // Empty array means no mock schedules
+  const [userBookings, setUserBookings] = useState<BookingItem[]>([]);
+
+  const fetchBookings = async () => {
+    try {
+      let host = 'localhost';
+      if (Constants.expoConfig?.hostUri) {
+        host = Constants.expoConfig.hostUri.split(':')[0];
+      } else if (Platform.OS === 'android') {
+        host = '10.0.2.2';
+      }
+      const response = await fetch(`http://${host}:3000/bookings/my-bookings`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (response.ok) {
+        const data = (await response.json()) as BookingItem[];
+        const activeBookings = data.filter((b: BookingItem) => b.status === 'PENDING' || b.status === 'CONFIRMED');
+        setUserBookings(activeBookings);
+      }
+    } catch (error) {
+      console.log('Failed to fetch bookings', error);
+    }
+  };
 
   const fetchBarbershops = async (query = '') => {
     try {
@@ -77,7 +106,10 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
   useFocusEffect(
     useCallback(() => {
       void fetchBarbershops('');
-    }, [])
+      if (token) {
+        void fetchBookings();
+      }
+    }, [token])
   );
 
   const getBarberImage = (imageUrl: unknown): ImageSourcePropType => {
@@ -112,7 +144,7 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <HomeHeader 
           onMenuPress={() => setMenuOpen(true)} 
           showBell={!!user} 
-          onBellPress={() => navigation.navigate('BarberAppointments')} 
+          onBellPress={() => navigation.navigate('MyAppointments')} 
         />
         <Greeting
           title="Olá,"
@@ -141,7 +173,25 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
           <View style={styles.section}>
             <SectionTitle text="AGENDAMENTOS" />
             {userBookings.length > 0 ? (
-              <ScheduleCard {...mockSchedule} />
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cardsRow}>
+                {userBookings.map((b: BookingItem) => {
+                  const date = new Date(b.scheduledAt);
+                  const monthNames = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+                  return (
+                    <Pressable key={b.id} style={{ marginRight: 12 }}>
+                      <ScheduleCard 
+                        status="Confirmado"
+                        service={b.service?.name || 'Serviço'}
+                        barberName={b.barbershop?.name || 'Barbearia'}
+                        avatar={getBarberImage(b.barbershop?.imageUrl)}
+                        month={monthNames[date.getMonth()]}
+                        day={String(date.getDate()).padStart(2, '0')}
+                        time={date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      />
+                    </Pressable>
+                  );
+                })}
+              </ScrollView>
             ) : (
               <Text style={{ color: '#838896', fontSize: 14, fontFamily: 'Nunito_400Regular', marginLeft: 20 }}>
                 Você não possui agendamentos.
