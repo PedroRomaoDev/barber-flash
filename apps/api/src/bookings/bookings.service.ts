@@ -42,18 +42,7 @@ export class BookingsService {
       .andWhere('b.status != :cancelled', { cancelled: BookingStatus.CANCELLED })
       .getMany();
 
-    const bookedSlots: string[] = [];
-
-    for (const b of bookings) {
-      const d = new Date(b.scheduledAt);
-      // Garantir que a extração da data e da hora seja feita na mesma timezone do app (Brasil)
-      const tzDate = d.toLocaleDateString('en-CA', { timeZone: 'America/Sao_Paulo' }); 
-      if (tzDate === dateStr) {
-        const timeStr = d.toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
-        bookedSlots.push(timeStr);
-      }
-    }
-
+    const bookedSlots = bookings.map(b => b.scheduledAt.toISOString());
     return { bookedSlots };
   }
 

@@ -95,8 +95,22 @@ export const BookingScreen: React.FC<Props> = ({ route, navigation }) => {
         const res = await fetch(`http://${host}:3000/bookings/availability?barberId=${selectedBarberId}&date=${dateStr}`);
         if (res.ok) {
           const data = (await res.json()) as { bookedSlots: string[] };
-          setBookedSlots(data.bookedSlots);
-          if (selectedTime && data.bookedSlots.includes(selectedTime)) {
+          
+          const localBookedTimes = data.bookedSlots
+            .map(isoStr => new Date(isoStr))
+            .filter(d => 
+              d.getFullYear() === selectedDate.getFullYear() &&
+              d.getMonth() === selectedDate.getMonth() &&
+              d.getDate() === selectedDate.getDate()
+            )
+            .map(d => {
+              const hours = String(d.getHours()).padStart(2, '0');
+              const minutes = String(d.getMinutes()).padStart(2, '0');
+              return `${hours}:${minutes}`;
+            });
+
+          setBookedSlots(localBookedTimes);
+          if (selectedTime && localBookedTimes.includes(selectedTime)) {
             setSelectedTime(null);
           }
         }
