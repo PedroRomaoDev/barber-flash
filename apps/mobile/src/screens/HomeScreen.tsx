@@ -149,7 +149,13 @@ export const HomeScreen: React.FC<HomeScreenProps> = ({ navigation }) => {
         <Greeting
           title="Olá,"
           highlight={user ? `${user.name}!` : "Faça seu Login!"}
-          subtitle="Sexta, 2 de Fevereiro"
+          subtitle={
+            new Date().toLocaleDateString('pt-BR', {
+              weekday: 'long',
+              day: 'numeric',
+              month: 'long'
+            }).replace(/^./, str => str.toUpperCase()).replace('-feira', '')
+          }
         />
         <SearchBar 
           value={searchQuery} 
