@@ -11,7 +11,6 @@ import * as ClipboardRaw from 'expo-clipboard';
 const Clipboard = ClipboardRaw as { setStringAsync: (text: string) => Promise<boolean> };
 import Toast from 'react-native-toast-message';
 
-import { Image } from 'expo-image';
 import barberMapImg from '../../assets/images/BarberMap.png';
 
 // Se existirem as imagens de placeholder

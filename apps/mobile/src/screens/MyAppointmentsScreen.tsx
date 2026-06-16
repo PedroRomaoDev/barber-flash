@@ -74,8 +74,20 @@ export const MyAppointmentsScreen: React.FC<Props> = ({ navigation }) => {
     }, [authToken])
   );
 
-  const confirmedBookings = bookings.filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED');
-  const pastBookings = bookings.filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED');
+  const now = new Date();
+
+  // Confirmed: status ativo E data ainda no futuro
+  const confirmedBookings = bookings.filter(b => {
+    const isPastDate = new Date(b.scheduledAt) < now;
+    return (b.status === 'PENDING' || b.status === 'CONFIRMED') && !isPastDate;
+  });
+
+  // Past: status COMPLETED/CANCELLED OU (status ativo mas data já passou)
+  const pastBookings = bookings.filter(b => {
+    const isPastDate = new Date(b.scheduledAt) < now;
+    return b.status === 'COMPLETED' || b.status === 'CANCELLED' ||
+      ((b.status === 'PENDING' || b.status === 'CONFIRMED') && isPastDate);
+  });
 
   const renderBookingCard = (item: BookingItem, isConfirmed: boolean) => {
     const bookingDate = new Date(item.scheduledAt);
