@@ -71,7 +71,7 @@ export const styles = StyleSheet.create({
     color: '#FFFFFF',
     fontSize: 20,
     fontFamily: 'Arial_800Regular',
-    fontWeight: 800,
+    fontWeight: '800',
     opacity: 0.6,
     lineHeight: 24,
     textAlign: 'center',
@@ -123,7 +123,7 @@ export const styles = StyleSheet.create({
     fontSize: 14,
     fontFamily: 'Nunito_400Regular',
     paddingVertical: 0,
-    outlineStyle: 'none',
+    outlineStyle: 'none' as 'solid',
   },
   searchButton: {
     width: 36,

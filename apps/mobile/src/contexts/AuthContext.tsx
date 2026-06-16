@@ -4,18 +4,18 @@ import { AuthenticatedUser } from '../services/auth-api';
 
 type AuthContextType = {
   user: AuthenticatedUser | null;
-  setUser: (user: AuthenticatedUser | null) => void;
+  setUser: (user: AuthenticatedUser | null) => Promise<void>;
   token: string | null;
-  setToken: (token: string | null) => void;
-  logout: () => void;
+  setToken: (token: string | null) => Promise<void>;
+  logout: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextType>({ 
   user: null, 
-  setUser: () => {},
+  setUser: async () => {},
   token: null,
-  setToken: () => {},
-  logout: () => {},
+  setToken: async () => {},
+  logout: async () => {},
 });
 
 export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
@@ -29,7 +29,7 @@ export const AuthProvider: React.FC<{children: React.ReactNode}> = ({ children }
         const storedUser = await AsyncStorage.getItem('@auth_user');
         const storedToken = await AsyncStorage.getItem('@auth_token');
         if (storedUser && storedToken) {
-          setUserState(JSON.parse(storedUser));
+          setUserState(JSON.parse(storedUser) as AuthenticatedUser);
           setTokenState(storedToken);
         }
       } catch (error) {

@@ -6,12 +6,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { Feather } from '@expo/vector-icons';
 import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
-import { LoginDialog } from './menu/components/LoginDialog';
+import { LoginDialog, AuthSubmitData } from './menu/components/LoginDialog';
+import { loginWithEmail, registerWithEmail } from '../services/auth-api';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'BarbershopDetails'>;
 
@@ -50,24 +51,32 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleAuth = async (data: AuthSubmitData) => {
     setAuthError(null);
+    if (!data.email || !data.password) {
+      setAuthError('E-mail e senha são obrigatórios');
+      return;
+    }
+    if (data.mode === 'register' && !data.name) {
+      setAuthError('Nome é obrigatório para cadastro');
+      return;
+    }
+
     setIsLoggingIn(true);
     try {
-      await new Promise<void>((resolve) => setTimeout(() => resolve(), 800));
+      let res;
+      if (data.mode === 'login') {
+        res = await loginWithEmail(data.email, data.password);
+      } else {
+        res = await registerWithEmail(data.name!, data.email, data.password);
+      }
       
-      setUser({
-        id: '1',
-        name: 'Pedro Gonçalves',
-        email: 'pedrogoncalves@gmail.com',
-        avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
-        role: 'USER',
-      });
-      setToken('mock-google-token');
+      void setUser(res.user);
+      void setToken(res.accessToken);
       setIsLoginOpen(false);
-      toast.show({ message: 'Login realizado com sucesso!', type: 'success' });
+      toast.show({ message: data.mode === 'login' ? 'Login realizado com sucesso!' : 'Cadastro realizado com sucesso!', type: 'success' });
     } catch (e) {
-      const errorMsg = e instanceof Error ? e.message : 'Erro ao fazer login com Google';
+      const errorMsg = e instanceof Error ? e.message : 'Erro na autenticação';
       setAuthError(errorMsg);
       toast.show({ message: errorMsg, type: 'error' });
     } finally {
@@ -165,7 +174,11 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>SOBRE NÓS</Text>
             <Text style={styles.aboutText}>
-              Bem-vindo à Vintage Barber, onde tradição encontra estilo. Nossa equipe de mestres barbeiros transforma cortes de cabelo e barbas em obras de arte. Em um ambiente acolhedor, promovemos confiança, estilo e uma comunidade unida.
+              {barbershop.name === 'Vintage Barber' && 'Bem-vindo à Vintage Barber, onde tradição encontra estilo. Nossa equipe de mestres barbeiros transforma cortes de cabelo e barbas em obras de arte. Em um ambiente acolhedor, promovemos confiança, estilo e uma comunidade unida.'}
+              {barbershop.name === 'Clássica Cortez' && 'Bem-vindo à Clássica Cortez. Especialistas em cortes clássicos e tradicionais, mantendo viva a essência da barbearia old school com toalha quente e navalha afiada.'}
+              {barbershop.name === 'Los Barberos' && 'Os melhores estilos modernos e degradês perfeitos você encontra na Los Barberos. Venha dar um trato no visual com profissionais antenados nas maiores tendências mundiais.'}
+              {barbershop.name === 'Homem Elegante' && 'Na Homem Elegante, o foco é o cavalheiro moderno. Oferecemos um serviço premium que combina cortes sofisticados, tratamentos faciais e um atendimento exclusivo para quem exige o melhor.'}
+              {barbershop.name !== 'Vintage Barber' && barbershop.name !== 'Clássica Cortez' && barbershop.name !== 'Los Barberos' && barbershop.name !== 'Homem Elegante' && `Bem-vindo à ${barbershop.name}. Nossa equipe de profissionais está pronta para te atender com qualidade e excelência.`}
             </Text>
           </View>
 
@@ -241,7 +254,7 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
               onPress={() => setIsLoginOpen(false)}
             />
             <LoginDialog
-              onGooglePress={() => { void handleGoogleLogin(); }}
+              onSubmit={(data) => { void handleAuth(data); }}
               loading={isLoggingIn}
               errorMessage={authError}
             />

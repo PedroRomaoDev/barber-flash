@@ -34,7 +34,7 @@ export const ProfileScreen: React.FC<Props> = ({ navigation }) => {
     : '#8162FF';
 
   const handleLogout = () => {
-    logout();
+    void logout();
     toast.show({ message: 'Você saiu da sua conta.', type: 'info' });
   };
 

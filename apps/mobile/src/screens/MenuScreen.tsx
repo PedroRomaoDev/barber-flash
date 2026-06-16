@@ -140,8 +140,8 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
         res = await registerWithEmail(data.name!, data.email, data.password);
       }
       
-      setUser(res.user);
-      setToken(res.accessToken);
+      void setUser(res.user);
+      void setToken(res.accessToken);
       setIsLoginOpen(false);
       toast.show({ message: data.mode === 'login' ? 'Login realizado com sucesso!' : 'Cadastro realizado com sucesso!', type: 'success' });
     } catch (e) {
@@ -159,7 +159,7 @@ export const MenuScreen: React.FC<MenuScreenProps> = ({
 
   const confirmLogout = () => {
     setIsLogoutConfirmOpen(false);
-    logout();
+    void logout();
     setOwnedShopsCount(0);
     setPendingCount(0);
     toast.show({ message: 'Logout realizado com sucesso!', type: 'info' });
