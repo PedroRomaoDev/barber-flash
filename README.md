@@ -2,6 +2,14 @@
 
 Projeto fullstack (Monorepo) para o aplicativo de agendamentos **Flash Barber**. O repositório contém a API em NestJS (`apps/api`) e o aplicativo Mobile em React Native/Expo (`apps/mobile`).
 
+## 👥 Equipe do Projeto
+
+- **Amanda Alves Mendonça** (Matrícula: UC24101151) - UX e UI
+- **Gabriel Leite Queiroz** (Matrícula: UC24101607) - Desenvolvedor Backend e DevOps
+- **Guilherme Lucas Rodrigues Cesar** (Matrícula: UC24100329) - UX, UI e auxiliou no Frontend
+- **Pedro Henrique Romão da Silva** (Matrícula: UC24101671) - Desenvolvedor Frontend e Backend
+- **Vinicius Almeida Lacerda** (Matrícula: UC24103099) - Desenvolvedor Backend e Frontend
+
 > [!IMPORTANT]
 > **Branch Principal:** Certifique-se de estar na branch `16-06` para rodar a versão mais atualizada deste projeto.
 > ```bash
@@ -94,4 +102,3 @@ npx expo start -c
 - `apps/api`: Servidor backend rodando **NestJS** + **TypeORM**.
 - `apps/mobile`: Aplicativo mobile rodando **React Native** + **Expo**.
 - Usamos **TurboRepo** e **pnpm workspaces** para o gerenciamento do projeto.
-
