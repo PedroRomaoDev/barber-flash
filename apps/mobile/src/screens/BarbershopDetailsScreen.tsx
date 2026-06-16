@@ -6,7 +6,8 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../navigation/RootNavigator';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
-import { Feather } from '@expo/vector-icons';
+import { Feather, MaterialCommunityIcons } from '@expo/vector-icons';
+import { LinearGradient } from 'expo-linear-gradient';
 
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
@@ -19,6 +20,7 @@ interface Service {
   name: string;
   description: string;
   price: string | number;
+  imageUrl?: string;
 }
 
 interface BarbershopDetails {
@@ -26,6 +28,7 @@ interface BarbershopDetails {
   name: string;
   address: string;
   services: Service[];
+  imageUrl?: string;
 }
 
 export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) => {
@@ -78,9 +81,6 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
         let host = 'localhost';
         if (Constants.expoConfig?.hostUri) {
           host = Constants.expoConfig.hostUri.split(':')[0];
-          if (host.startsWith('192.168.') || host.startsWith('10.') || host.startsWith('172.')) {
-            host = `${host}.nip.io`;
-          }
         } else if (Platform.OS === 'android') {
           host = '10.0.2.2';
         }
@@ -119,46 +119,123 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
   }
 
   return (
-    <SafeAreaView style={styles.screen}>
-      <ScrollView>
+    <View style={styles.screen}>
+      <ScrollView bounces={false} showsVerticalScrollIndicator={false}>
+        {/* Header Image with Gradient Overlay */}
         <View style={styles.headerImageContainer}>
-          <Image source={barbeariaImg} style={{ width: '100%', height: '100%', position: 'absolute' }} resizeMode="cover" />
-          <Pressable style={styles.backIcon} onPress={() => navigation.goBack()}>
-            <Feather name="chevron-left" size={24} color="#FFF" />
-          </Pressable>
+          <Image 
+            source={barbeariaImg} 
+            style={styles.headerImage} 
+            resizeMode="cover" 
+          />
+          <LinearGradient
+            colors={['transparent', 'rgba(20, 21, 24, 0.8)', '#141518']}
+            style={StyleSheet.absoluteFillObject}
+          />
+          
+          <SafeAreaView edges={['top']} style={styles.headerActions}>
+            <Pressable style={styles.iconButton} onPress={() => navigation.goBack()}>
+              <Feather name="chevron-left" size={24} color="#FFF" />
+            </Pressable>
+            <Pressable style={styles.iconButton}>
+              <Feather name="menu" size={24} color="#FFF" />
+            </Pressable>
+          </SafeAreaView>
         </View>
 
-        <View style={styles.infoContainer}>
-          <Text style={styles.title}>{barbershop.name}</Text>
-          <Text style={styles.address}>{barbershop.address}</Text>
-
-          <Text style={styles.sectionTitle}>Serviços</Text>
-          {barbershop.services?.map((service) => (
-            <View key={service.id} style={styles.serviceCard}>
-              <View>
-                <Text style={styles.serviceName}>{service.name}</Text>
-                <Text style={styles.serviceDesc}>{service.description}</Text>
-              </View>
-              <View style={styles.priceContainer}>
-                <Text style={styles.servicePrice}>R$ {service.price}</Text>
-                <Pressable
-                  style={styles.bookButton}
-                  onPress={() => handleBook(service.id)}
-                >
-                  <Text style={styles.bookButtonText}>Reservar</Text>
-                </Pressable>
-              </View>
+        <View style={styles.contentContainer}>
+          {/* Barbershop Info Block */}
+          <View style={styles.infoBlock}>
+            <Text style={styles.title}>{barbershop.name}</Text>
+            
+            <View style={styles.infoRow}>
+              <Feather name="map-pin" size={16} color="#8162FF" />
+              <Text style={styles.infoText}>{barbershop.address}</Text>
             </View>
-          ))}
-          {(!barbershop.services || barbershop.services.length === 0) && (
-            <Text style={styles.emptyText}>Nenhum serviço disponível.</Text>
-          )}
+            
+            <View style={styles.infoRow}>
+              <Feather name="star" size={16} color="#8162FF" />
+              <Text style={styles.infoText}>5,0 (889 avaliações)</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Sobre Nós Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>SOBRE NÓS</Text>
+            <Text style={styles.aboutText}>
+              Bem-vindo à Vintage Barber, onde tradição encontra estilo. Nossa equipe de mestres barbeiros transforma cortes de cabelo e barbas em obras de arte. Em um ambiente acolhedor, promovemos confiança, estilo e uma comunidade unida.
+            </Text>
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Serviços Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>SERVIÇOS</Text>
+            {barbershop.services?.map((service) => (
+              <View key={service.id} style={styles.serviceCard}>
+                <Image source={barbeariaImg} style={styles.serviceImage} />
+                <View style={styles.serviceContent}>
+                  <Text style={styles.serviceName}>{service.name}</Text>
+                  <Text style={styles.serviceDesc} numberOfLines={2}>
+                    {service.description}
+                  </Text>
+                  <View style={styles.priceRow}>
+                    <Text style={styles.servicePrice}>
+                      R$ {Number(service.price).toFixed(2).replace('.', ',')}
+                    </Text>
+                    <Pressable
+                      style={styles.bookButton}
+                      onPress={() => handleBook(service.id)}
+                    >
+                      <Text style={styles.bookButtonText}>Reservar</Text>
+                    </Pressable>
+                  </View>
+                </View>
+              </View>
+            ))}
+            {(!barbershop.services || barbershop.services.length === 0) && (
+              <Text style={styles.emptyText}>Nenhum serviço disponível.</Text>
+            )}
+          </View>
+
+          <View style={styles.divider} />
+
+          {/* Contato Section */}
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>CONTATO</Text>
+            <View style={styles.contactRow}>
+              <View style={styles.contactLeft}>
+                <Feather name="smartphone" size={20} color="#FFF" />
+                <Text style={styles.contactNumber}>(11) 98204-5108</Text>
+              </View>
+              <Pressable style={styles.copyButton}>
+                <Text style={styles.copyButtonText}>Copiar</Text>
+              </Pressable>
+            </View>
+            <View style={styles.contactRow}>
+              <View style={styles.contactLeft}>
+                <Feather name="smartphone" size={20} color="#FFF" />
+                <Text style={styles.contactNumber}>(11) 99503-2351</Text>
+              </View>
+              <Pressable style={styles.copyButton}>
+                <Text style={styles.copyButtonText}>Copiar</Text>
+              </Pressable>
+            </View>
+          </View>
+
+          {/* Footer */}
+          <View style={styles.footer}>
+            <Text style={styles.footerText}>© 2026 Copyright Flash Barber</Text>
+          </View>
         </View>
       </ScrollView>
 
       {isLoginOpen && (
         <View style={StyleSheet.absoluteFillObject}>
-          <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' }}>
+          <View style={styles.loginOverlay}>
             <Pressable
               style={StyleSheet.absoluteFillObject}
               onPress={() => setIsLoginOpen(false)}
@@ -171,29 +248,56 @@ export const BarbershopDetailsScreen: React.FC<Props> = ({ route, navigation }) 
           </View>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: '#141518' },
   center: { flex: 1, backgroundColor: '#141518', alignItems: 'center', justifyContent: 'center' },
-  headerImageContainer: { height: 250, width: '100%', backgroundColor: '#26272B', position: 'relative' },
-  backIcon: { position: 'absolute', top: 40, left: 20, width: 40, height: 40, backgroundColor: 'rgba(0,0,0,0.5)', borderRadius: 20, alignItems: 'center', justifyContent: 'center' },
-  backIconText: { color: '#FFF', fontSize: 24, fontWeight: 'bold' },
-  infoContainer: { padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#FFF', marginBottom: 8 },
-  address: { fontSize: 14, color: '#838896', marginBottom: 24 },
-  sectionTitle: { fontSize: 14, fontWeight: 'bold', color: '#838896', textTransform: 'uppercase', marginBottom: 16 },
-  serviceCard: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#1A1B1F', padding: 16, borderRadius: 10, marginBottom: 12 },
-  serviceName: { fontSize: 16, fontWeight: 'bold', color: '#FFF', marginBottom: 4 },
-  serviceDesc: { fontSize: 12, color: '#838896', maxWidth: 200 },
-  priceContainer: { alignItems: 'flex-end' },
-  servicePrice: { fontSize: 16, fontWeight: 'bold', color: '#8162FF', marginBottom: 8 },
-  bookButton: { backgroundColor: '#8162FF', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 8 },
-  bookButtonText: { color: '#FFF', fontWeight: 'bold', fontSize: 14 },
-  emptyText: { color: '#838896', fontSize: 14, fontStyle: 'italic' },
-  errorText: { color: '#FFF', fontSize: 16, marginBottom: 20 },
+  
+  headerImageContainer: { height: 280, width: '100%', position: 'relative' },
+  headerImage: { width: '100%', height: '100%', position: 'absolute' },
+  headerActions: { flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 20, paddingTop: 10 },
+  iconButton: { width: 44, height: 44, backgroundColor: 'rgba(26, 27, 31, 0.6)', borderRadius: 22, alignItems: 'center', justifyContent: 'center' },
+  
+  contentContainer: { paddingHorizontal: 24, paddingBottom: 40 },
+  
+  infoBlock: { marginTop: -20 },
+  title: { fontSize: 22, fontFamily: 'Nunito_700Bold', color: '#FFFFFF', marginBottom: 12 },
+  infoRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 8 },
+  infoText: { fontSize: 14, fontFamily: 'Nunito_400Regular', color: '#838896', marginLeft: 8 },
+  
+  divider: { height: 1, backgroundColor: '#26272B', marginVertical: 24 },
+  
+  section: { marginBottom: 0 },
+  sectionTitle: { fontSize: 12, fontFamily: 'Nunito_700Bold', color: '#838896', marginBottom: 16, letterSpacing: 0.5 },
+  
+  aboutText: { fontSize: 14, fontFamily: 'Nunito_400Regular', color: '#E8E8E8', lineHeight: 22 },
+  
+  serviceCard: { flexDirection: 'row', backgroundColor: '#1A1B1F', borderRadius: 12, borderColor: '#26272B', borderWidth: 1, padding: 12, marginBottom: 16 },
+  serviceImage: { width: 90, height: 90, borderRadius: 8 },
+  serviceContent: { flex: 1, paddingLeft: 16, justifyContent: 'space-between' },
+  serviceName: { fontSize: 14, fontFamily: 'Nunito_700Bold', color: '#FFFFFF', marginBottom: 4 },
+  serviceDesc: { fontSize: 12, fontFamily: 'Nunito_400Regular', color: '#838896', lineHeight: 18 },
+  priceRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 },
+  servicePrice: { fontSize: 14, fontFamily: 'Nunito_700Bold', color: '#8162FF' },
+  bookButton: { backgroundColor: '#26272B', paddingVertical: 6, paddingHorizontal: 16, borderRadius: 8 },
+  bookButtonText: { color: '#FFFFFF', fontFamily: 'Nunito_700Bold', fontSize: 12 },
+  
+  contactRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 },
+  contactLeft: { flexDirection: 'row', alignItems: 'center' },
+  contactNumber: { color: '#FFFFFF', fontFamily: 'Nunito_400Regular', fontSize: 14, marginLeft: 12 },
+  copyButton: { backgroundColor: '#1A1B1F', borderColor: '#26272B', borderWidth: 1, paddingVertical: 6, paddingHorizontal: 16, borderRadius: 8 },
+  copyButtonText: { color: '#FFFFFF', fontFamily: 'Nunito_700Bold', fontSize: 12 },
+  
+  footer: { alignItems: 'center', marginTop: 20 },
+  footerText: { color: '#838896', fontFamily: 'Nunito_400Regular', fontSize: 12 },
+  
+  emptyText: { color: '#838896', fontSize: 14, fontStyle: 'italic', fontFamily: 'Nunito_400Regular' },
+  errorText: { color: '#FFF', fontSize: 16, marginBottom: 20, fontFamily: 'Nunito_700Bold' },
   backButton: { backgroundColor: '#8162FF', padding: 12, borderRadius: 8 },
-  backButtonText: { color: '#FFF', fontWeight: 'bold' },
+  backButtonText: { color: '#FFF', fontFamily: 'Nunito_700Bold' },
+  
+  loginOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center' },
 });
