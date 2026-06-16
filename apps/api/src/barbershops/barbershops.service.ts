@@ -71,6 +71,7 @@ export class BarbershopsService {
   }
 
   async seed(): Promise<string> {
+    await this.barbershopRepository.manager.getRepository('Booking').createQueryBuilder().delete().execute();
     await this.serviceRepository.createQueryBuilder().delete().execute();
     await this.barbershopRepository.createQueryBuilder().delete().execute();
     // continue with seed
@@ -154,6 +155,51 @@ export class BarbershopsService {
           barbershop: saved,
         })
       );
+
+      // Create Mock Bookings for Pedro
+      const userRepo = this.barbershopRepository.manager.getRepository(User);
+      let clientUser = await userRepo.findOne({ where: { email: 'pedro7ntj@gmail.com' } });
+      if (!clientUser) {
+        clientUser = await userRepo.save(userRepo.create({ name: 'Pedro Gonçalves', email: 'pedro7ntj@gmail.com', password: '123' }));
+      }
+
+      const bookingRepo = this.barbershopRepository.manager.getRepository('Booking');
+      const firstService = await this.serviceRepository.findOne({ where: { barbershop: { id: saved.id } } });
+
+      if (firstService) {
+        // Pending booking
+        await bookingRepo.save({
+          scheduledAt: new Date(Date.now() + 86400000 * 2), // in 2 days
+          priceSnapshot: firstService.price,
+          status: 'PENDING',
+          client: clientUser,
+          barber: mockBarber,
+          barbershop: saved,
+          service: firstService
+        });
+
+        // Confirmed booking
+        await bookingRepo.save({
+          scheduledAt: new Date(Date.now() + 86400000), // tomorrow
+          priceSnapshot: firstService.price,
+          status: 'CONFIRMED',
+          client: clientUser,
+          barber: mockBarber,
+          barbershop: saved,
+          service: firstService
+        });
+
+        // Completed booking
+        await bookingRepo.save({
+          scheduledAt: new Date(Date.now() - 86400000), // yesterday
+          priceSnapshot: firstService.price,
+          status: 'COMPLETED',
+          client: clientUser,
+          barber: mockBarber,
+          barbershop: saved,
+          service: firstService
+        });
+      }
     }
     return 'Seed concluído com sucesso';
   }
