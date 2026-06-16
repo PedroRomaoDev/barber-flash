@@ -12,7 +12,7 @@ const Clipboard = ClipboardRaw as { setStringAsync: (text: string) => Promise<bo
 import Toast from 'react-native-toast-message';
 
 import { Image } from 'expo-image';
-import barberMapImg from '../../assets/images/BarberMap.svg';
+import barberMapImg from '../../assets/images/BarberMap.png';
 
 // Se existirem as imagens de placeholder
 import { assets } from './home/assets';
@@ -138,10 +138,10 @@ export const AppointmentDetailsScreen: React.FC<Props> = ({ route, navigation })
         
         {/* Container do Mapa (Background escuro elegante com gradiente) */}
         <View style={styles.mapContainer}>
-          <Image
+          <RNImage
             source={barberMapImg}
             style={StyleSheet.absoluteFillObject}
-            contentFit="cover"
+            resizeMode="cover"
           />
 
           {/* Barbershop Info Card flutuando sobre a base do mapa */}
